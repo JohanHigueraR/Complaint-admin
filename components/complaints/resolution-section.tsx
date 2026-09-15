@@ -107,6 +107,18 @@ export default function ResolutionSection({
     );
   }
 
+  if (status === "escalado_merchant") {
+    return (
+      <section aria-label="Resolución del caso" className="rounded-xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
+        <div className="flex items-center gap-2.5">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-slate-800 text-orange-300"><Scale size={17} aria-hidden="true" /></span>
+          <h2 className="text-base font-semibold text-slate-100">Resolución del caso</h2>
+        </div>
+        <p className="mt-3 text-sm leading-6 text-slate-400">El caso está en espera de respuesta del merchant. La decisión estará disponible cuando se cierre el seguimiento y la investigación continúe.</p>
+      </section>
+    );
+  }
+
   if (status === "aprobado" || status === "rechazado" || status === "completado") {
     if (!resolution) {
       return (

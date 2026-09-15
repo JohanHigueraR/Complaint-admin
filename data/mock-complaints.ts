@@ -12,7 +12,7 @@ const fixtures: ComplaintFixture[] = [
   ["Q-2026-00144", "2026-09-12T17:50:00-05:00", "Andrea Pardo", "CLI-020", "***2947", "Cobro no autorizado", "Estación Energía", "TX-840921", 115000, "rechazado", "media", "Carlos Rodríguez"],
   ["Q-2026-00143", "2026-09-12T14:08:00-05:00", "Tomás Cifuentes", "CLI-019", "***8325", "Reverso pendiente", "Viajes Horizonte", "TX-840889", 568000, "completado", "alta", "Andrés Torres"],
   ["Q-2026-00142", "2026-09-12T09:30:00-05:00", "Paula Miranda", "CLI-018", "***4039", "Transacción no reconocida", "Café Distrito", "TX-840833", 42800, "recibido", "baja", "María Gómez"],
-  ["Q-2026-00141", "2026-09-11T18:22:00-05:00", "Ricardo Salas", "CLI-017", "***5518", "Producto no entregado", "Hogar & Más", "TX-840794", 913000, "investigando", "alta", "Laura Martínez"],
+  ["Q-2026-00141", "2026-09-11T18:22:00-05:00", "Ricardo Salas", "CLI-017", "***5518", "Producto no entregado", "Hogar & Más", "TX-840794", 913000, "escalado_merchant", "alta", "Laura Martínez"],
   ["Q-2026-00140", "2026-09-11T15:41:00-05:00", "Natalia Rueda", "CLI-016", "***6820", "Cobro duplicado", "Supermercado Andino", "TX-840761", 126300, "manejando", "media", "María Gómez"],
   ["Q-2026-00139", "2026-09-11T10:12:00-05:00", "Julián Montoya", "CLI-015", "***2971", "Reverso pendiente", "Cine Plaza", "TX-840702", 38500, "aprobado", "baja", "Andrés Torres"],
   ["Q-2026-00138", "2026-09-10T16:45:00-05:00", "Camila Ospina", "CLI-014", "***8206", "Servicio no conforme", "Conexión Digital", "TX-840655", 89900, "rechazado", "media", "Carlos Rodríguez"],
@@ -53,7 +53,7 @@ export const mockComplaints: Complaint[] = fixtures.map(([id, createdAt, name, c
   let investigation = null as Complaint["investigation"] | null;
   const investigator = assignedAdvisorObj?.name ?? (index % 2 === 0 ? "María Gómez" : "Laura Martínez");
 
-  if (status === "investigando" || status === "manejando") {
+  if (status === "investigando" || status === "manejando" || status === "escalado_merchant") {
     // partially or fully started
     investigation = {
       startedAt: new Date(new Date(createdAt).getTime() + 10 * 60_000).toISOString(),
@@ -123,6 +123,10 @@ export const mockComplaints: Complaint[] = fixtures.map(([id, createdAt, name, c
     assignedAdvisor: assignedAdvisorObj,
     description: descriptions[complaintType],
     investigation,
+    merchantEscalation:
+      status === "escalado_merchant"
+        ? { escalatedAt: new Date(new Date(createdAt).getTime() + 60 * 60_000).toISOString(), escalatedBy: assignedAdvisorObj?.name ?? investigator, note: "Se solicita al merchant confirmar la entrega y enviar soporte de despacho.", respondedAt: null, response: null, closedBy: null }
+        : null,
     evidences,
     resolution: (() => {
       if (status === "aprobado") return { decision: "aprobado", decidedAt: new Date(new Date(createdAt).getTime() + 80 * 60_000).toISOString(), decidedBy: assignedAdvisorObj?.name ?? investigator };
@@ -156,6 +160,9 @@ export const mockComplaints: Complaint[] = fixtures.map(([id, createdAt, name, c
       if (status === "investigando") {
         // Received -> Investigating
         events.push({ id: `H-${id}-s-inv`, type: "status_change", title: "Estado actualizado", description: `Recibido → Investigando`, createdAt: new Date(created + 8 * 60_000).toISOString(), actor: assignedAdvisorObj?.name ?? investigator, metadata: { from: "recibido", to: "investigando" } });
+      } else if (status === "escalado_merchant") {
+        events.push({ id: `H-${id}-s-inv`, type: "status_change", title: "Estado actualizado", description: `Recibido → Investigando`, createdAt: new Date(created + 8 * 60_000).toISOString(), actor: assignedAdvisorObj?.name ?? investigator, metadata: { from: "recibido", to: "investigando" } });
+        events.push({ id: `H-${id}-merchant-esc`, type: "merchant_escalated", title: "Caso enviado al merchant", description: "Se solicita al merchant confirmar la entrega y enviar soporte de despacho.", createdAt: new Date(created + 60 * 60_000).toISOString(), actor: assignedAdvisorObj?.name ?? investigator, metadata: null });
       } else if (status === "manejando") {
         events.push({ id: `H-${id}-s-inv`, type: "status_change", title: "Estado actualizado", description: `Recibido → Investigando`, createdAt: new Date(created + 8 * 60_000).toISOString(), actor: assignedAdvisorObj?.name ?? investigator, metadata: { from: "recibido", to: "investigando" } });
         events.push({ id: `H-${id}-s-man`, type: "status_change", title: "Estado actualizado", description: `Investigando → Manejando`, createdAt: new Date(created + 40 * 60_000).toISOString(), actor: assignedAdvisorObj?.name ?? investigator, metadata: { from: "investigando", to: "manejando" } });

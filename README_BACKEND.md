@@ -44,7 +44,7 @@
 | `/quejas/pendientes` | `app/quejas/pendientes/page.tsx` | `<ComplaintInbox />` vista `pending` |
 | `/quejas/completadas` | `app/quejas/completadas/page.tsx` | `<ComplaintInbox />` vista `completed` |
 | `/quejas/[id]` | `app/quejas/[id]/page.tsx` | `<ComplaintDetail>` o "Queja no encontrada" |
-| `/` | `app/page.tsx` | `POR DEFINIR` |
+| `/` | `app/page.tsx` | `redirect("/quejas")` |
 
 Las 4 rutas de inbox comparten `components/complaints/complaint-inbox.tsx`. La vista se deriva del pathname (`getView`): `…/mis → mine`, `…/pendientes → pending`, `…/completadas → completed`, resto → `all`.
 
@@ -59,7 +59,7 @@ Las 4 rutas de inbox comparten `components/complaints/complaint-inbox.tsx`. La v
 | Mocks | `data/mock-complaints.ts`, `data/mock-advisors.ts`, `data/mock-notifications.ts` | A reemplazar |
 | Constantes | `constants/complaint-flow.ts`, `constants/complaint-options.ts`, `constants/complaints.ts` | Transiciones, agrupaciones, labels |
 
-No existe capa `services/` ni `hooks/` de datos. Los componentes consumen `useComplaintStore()` directamente.
+`lib/store.ts` consume la capa `services/` (`complaintsService`/`notificationsService`, ver `services/README.md`) — el switch entre datos mock y API real es la variable de entorno `NEXT_PUBLIC_DATA_SOURCE`, sin tocar componentes. Los componentes siguen consumiendo `useComplaintStore()` directamente; nunca importan `services/` por su cuenta.
 
 ### Componentes relevantes (archivos reales)
 
@@ -69,7 +69,8 @@ No existe capa `services/` ni `hooks/` de datos. Los componentes consumen `useCo
 - Detalle: `complaint-detail.tsx`, `complaint-progress.tsx`,
   `complaint-state-action.tsx`, `advisor-assignment.tsx`,
   `advisor-selector.tsx`, `investigation-section.tsx`,
-  `evidence-section.tsx`, `internal-notes-section.tsx`,
+  `evidence-section.tsx`, `merchant-escalation-section.tsx`,
+  `internal-notes-section.tsx`,
   `resolution-section.tsx` (`dynamic(...,{ssr:false})`),
   `complaint-timeline.tsx`, `copy-button.tsx`.
 - `complaint-actions.tsx` está deshabilitado ("Próximamente",
@@ -88,6 +89,7 @@ Valores reales (`types/complaint.ts`, minúsculas, sin tildes):
 |---|---|---|
 | `recibido` | Recibido | Pendiente de iniciar investigación |
 | `investigando` | Investigando | Siendo investigado |
+| `escalado_merchant` | Escalado a merchant | Enviado al merchant, en espera de su respuesta |
 | `manejando` | Manejando | Investigación completa, listo para gestionar |
 | `aprobado` | Aprobado | Aprobada, pendiente de completar |
 | `rechazado` | Rechazado | Rechazada, pendiente de completar |
@@ -96,20 +98,22 @@ Valores reales (`types/complaint.ts`, minúsculas, sin tildes):
 Transiciones (`statusTransitions` en `constants/complaint-flow.ts`):
 
 ```text
-recibido  -> investigando
-investigando -> manejando
-manejando -> aprobado | rechazado
-aprobado  -> completado
-rechazado -> completado
-completado -> (sin salidas)
+recibido            -> investigando
+investigando        -> manejando | escalado_merchant
+escalado_merchant   -> investigando   (solo cerrando el seguimiento con una respuesta registrada)
+manejando           -> aprobado | rechazado
+aprobado            -> completado
+rechazado           -> completado
+completado          -> (sin salidas)
 ```
 
 Reglas que backend debería replicar:
 
-- `updateComplaintStatus` solo permite `investigando`/`manejando` (`SIMPLE_TARGETS`). Lo demás → `INVALID_TRANSITION`.
-- `aprobado/rechazado/completado` solo vía acciones dedicadas.
+- `updateComplaintStatus` (genérico, sin datos adicionales) solo permite `recibido→investigando` e `investigando→manejando` (ver `isSimpleTransition` en `constants/complaint-flow.ts`). Todo lo demás → `INVALID_TRANSITION` con el mensaje "usa la acción dedicada".
+- `aprobado/rechazado/completado` y `escalado_merchant`/cierre de seguimiento solo vía acciones dedicadas (cada una valida su propio estado de origen, no reutiliza el motor genérico).
 - Rechazo exige motivo no vacío. Completar exige venir de `aprobado` o `rechazado`.
-- No existen ni deben inventarse: `pendiente`, `en revisión`, `esperando información`, `escalado`, `resuelto`, `cerrado`, `cancelado`. "Pendientes" = `recibido,investigando,manejando`; "Completadas" = `aprobado,rechazado,completado`. Son agrupaciones UI (`pendingStatuses`/`completedStatuses` en `constants/complaint-options.ts`).
+- Escalar al merchant exige una nota no vacía y solo aplica viniendo de `investigando`. Cerrar el seguimiento exige una respuesta no vacía y solo aplica viniendo de `escalado_merchant`; siempre vuelve a `investigando` (ver §3.4).
+- No existen ni deben inventarse otros estados: `pendiente`, `en revisión`, `esperando información`, `resuelto`, `cerrado`, `cancelado`. "Pendientes" = `recibido,investigando,escalado_merchant,manejando`; "Completadas" = `aprobado,rechazado,completado`. Son agrupaciones UI (`pendingStatuses`/`completedStatuses` en `constants/complaint-options.ts`).
 
 ## 3. Quejas: listado, detalle, status
 
@@ -144,7 +148,7 @@ Reglas que backend debería replicar:
 ```
 
 - Errores: 400, 401, 403, 500.
-- Integración: `lib/store.ts` (`useComplaintStore.complaints`). `PROPUESTA DE ESTRUCTURA`: `@/services/complaints.service.ts` + `@/hooks/useComplaints.ts`.
+- Integración: `lib/store.ts` (`useComplaintStore.complaints`). Contrato ya definido en `@/services/contracts/complaints.service.ts` (`getComplaints`), pendiente conectar (ver §11).
 
 ### 3.2 `GET /complaints/{id}` — Detalle
 
@@ -154,7 +158,7 @@ Reglas que backend debería replicar:
 - Response 200: `Complaint` completo. Recomendación de embeber en §14. Mínimo: campos 3.1 + `investigation`, `evidences`, `notes`, `resolution`, `history`.
 - Errores: 400 (id malformado), 401, 403, 404, 500.
 - Nota: frontend normaliza `CL-` → `Q-` (`normalizeComplaintId` en `lib/store.ts`) y muestra `#CL-…` (`displayId`). Backend define formato canónico del id (`POR DEFINIR`).
-- Integración: `app/quejas/[id]/page.tsx` (reemplazar `getMockComplaintById`). `PROPUESTA DE ESTRUCTURA`: `@/services/complaints.service.ts` (`getComplaintById`).
+- Integración: `app/quejas/[id]/page.tsx` (reemplazar `getMockComplaintById`). Contrato ya definido en `@/services/contracts/complaints.service.ts` (`getComplaintById`), pendiente conectar (ver §11).
 
 ### 3.3 `PATCH /complaints/{id}/status` — Avance simple
 
@@ -166,6 +170,27 @@ Reglas que backend debería replicar:
 - Response 200: `Complaint` actualizada (o `{id,status,updatedAt,historyEvent?,notification?}` — `POR DEFINIR` según §9/§10 sobre quién genera historial).
 - Errores: 400 (destino inválido), 401, 403, 404, 409/422 (transición no permitida — hoy `INVALID_TRANSITION`), 500. El frontend también tiene `BUSY` (solo local, mutex).
 - Integración: `lib/store.ts` (`updateComplaintStatus`).
+
+### 3.4 Seguimiento con el merchant — `escalado_merchant`
+
+No cambia el resultado del caso (no es aprobar/rechazar/cerrar); es una pausa de la investigación mientras se espera al merchant. Ver también §13 (`MerchantEscalation`).
+
+**`POST /complaints/{id}/merchant-escalations` — Enviar al merchant**
+
+- Objetivo: `investigando → escalado_merchant`. Lo consume `merchant-escalation-section.tsx` → `escalateToMerchant`.
+- Request body: `{ "note": "Confirmar si el cobro fue autorizado…" }` (obligatorio, no vacío).
+- Response 200: queja con `status:"escalado_merchant"` y `merchantEscalation:{escalatedAt,escalatedBy,note,respondedAt:null,response:null,closedBy:null}`. Evento `merchant_escalated` + notificación tipo `merchant` (§9/§10).
+- Errores: 400 (nota vacía — hoy `MISSING_DATA`), 401, 403, 404, 409 (estado distinto de `investigando` — hoy `INVALID_TRANSITION`), 500.
+- Integración: `lib/store.ts` (`escalateToMerchant`).
+
+**`POST /complaints/{id}/merchant-escalations/close` — Registrar respuesta y cerrar**
+
+- Objetivo: `escalado_merchant → investigando`. Lo consume `merchant-escalation-section.tsx` → `closeMerchantEscalation`.
+- Request body: `{ "response": "El merchant confirmó el reverso…" }` (obligatorio, no vacío).
+- Response 200: queja con `status:"investigando"` y `merchantEscalation` completado (`respondedAt`, `response`, `closedBy`). Evento `merchant_response_received` + notificación tipo `merchant` (§9/§10).
+- Errores: 400 (respuesta vacía — hoy `MISSING_DATA`), 401, 403, 404, 409 (estado distinto de `escalado_merchant` — hoy `INVALID_TRANSITION`), 500.
+- Integración: `lib/store.ts` (`closeMerchantEscalation`).
+- **Importante para backend:** un caso puede escalarse más de una vez a lo largo de su vida. El frontend solo necesita el ciclo más reciente en el campo `merchantEscalation` de la queja, pero backend debe conservar el histórico completo de ciclos (ver `README_DATABASE.md`, tabla `merchant_escalations`) para no perder auditoría.
 
 ## 4. Asignación
 
@@ -209,7 +234,7 @@ Solo cambia `assignedAdvisor`.
 
 ## 5. Investigación
 
-Editable solo en `investigando`/`manejando` (`INVESTIGATION_EDITABLE` en `lib/store.ts`; `readOnly` en `investigation-section.tsx`). Guardar **no cambia el estado**.
+Editable solo en `investigando`/`manejando`/`escalado_merchant` (`INVESTIGATION_EDITABLE` en `lib/store.ts`; `readOnly` en `investigation-section.tsx`). Guardar **no cambia el estado**.
 
 ### 5.1 `GET /complaints/{id}/investigation` — Consultar
 
@@ -242,7 +267,7 @@ Editable solo en `investigando`/`manejando` (`INVESTIGATION_EDITABLE` en `lib/st
 
 ## 6. Evidencias
 
-Agregables solo en `investigando`/`manejando` (`EVIDENCE_EDITABLE` en store; `readOnly` en `evidence-section.tsx`). No hay edición ni borrado implementado.
+Agregables solo en `investigando`/`manejando`/`escalado_merchant` (`EVIDENCE_EDITABLE` en store; `readOnly` en `evidence-section.tsx`). No hay edición ni borrado implementado.
 
 ### 6.1 `GET /complaints/{id}/evidence` — Listar
 
@@ -293,7 +318,7 @@ Agregables solo en `investigando`/`manejando` (`EVIDENCE_EDITABLE` en store; `re
 
 ## 7. Notas internas
 
-Agregables solo en `recibido`/`investigando`/`manejando` (`NOTES_EDITABLE` en store; `readOnly` incluye `aprobado/rechazado/completado`). No hay edición ni borrado.
+Agregables solo en `recibido`/`investigando`/`escalado_merchant`/`manejando` (`NOTES_EDITABLE` en store; `readOnly` incluye `aprobado/rechazado/completado`). No hay edición ni borrado.
 
 ### 7.1 `GET /complaints/{id}/notes` — Listar
 
@@ -381,7 +406,8 @@ Decisiones (`approve`/`reject`/`complete`) validan con `canTransition` y modific
 
 - `type` reconocidos (en `complaint-timeline.tsx`):
   `received`, `assignment`, `investigation_started`,
-  `investigation_updated`, `evidence_added`,
+  `investigation_updated`, `merchant_escalated`,
+  `merchant_response_received`, `evidence_added`,
   `internal_note_added`, `status_change`, `approved`,
   `rejected`, `completed`. `metadata` libre.
 - Puede venir embebido en `GET /complaints/{id}` (§14).
@@ -390,7 +416,7 @@ Decisiones (`approve`/`reject`/`complete`) validan con `canTransition` y modific
 
 ## 10. Notificaciones
 
-El muéstrame (`notification-button.tsx`) y el centro (`notification-center.tsx`) consumen `notifications` del store (hoy `mockNotifications`).
+El centro de notificaciones (`notification-center.tsx`, montado en `layout/header.tsx`) consume `notifications` del store (hoy `mockNotifications`). Nota: existe también `layout/notification-button.tsx`, pero es un componente huérfano con datos hardcodeados (badge fijo "3 pendientes") — no está montado en ningún layout ni conectado al store; no lo usen como referencia de integración.
 
 ### 10.1 `GET /notifications` — Listar
 
@@ -434,30 +460,15 @@ El muéstrame (`notification-button.tsx`) y el centro (`notification-center.tsx`
 
 - Objetivo: badge (`getUnreadNotificationCount`). Opcional si el listado (10.1) incluye `read`.
 - Response: `{ "count": 3 }`.
-- Integración: `layout/notification-button.tsx` + `getUnreadNotificationCount`.
+- Integración: `notification-center.tsx` (badge del ícono de campana) + `getUnreadNotificationCount`.
 
 > Las notificaciones hoy se **generan localmente** por cada acción (`makeNotification` en `lib/store.ts`). Recomendación: backend genera al persistir eventos; frontend deja de crearlas localmente. Estado: `POR DEFINIR` (¿WS/política push vs. consumo del listado?).
 
 ## 11. Ubicación en el frontend
 
-> No existe capa `services/` ni `hooks/` de datos hoy. Los componentes consumen `useComplaintStore` directamente.
+> Los componentes consumen `useComplaintStore` directamente; el store, a su vez, consume la capa `services/` (`complaintsService`/`notificationsService`) — ver [`services/README.md`](./services/README.md) para el detalle de qué falta para que `NEXT_PUBLIC_DATA_SOURCE=api` funcione contra un backend real. No hay carpeta `hooks/` de datos.
 
-### PROPUESTA DE ESTRUCTURA (no implementada)
-
-```text
-src/
-  services/
-    complaints.service.ts
-    advisors.service.ts
-    notifications.service.ts
-  hooks/
-    useComplaints.ts
-    useComplaint.ts
-    useAdvisors.ts
-    useNotifications.ts
-```
-
-Alias `@/*` → `./*` (`tsconfig.json`) → rutas propuestas `@/services/...`, `@/hooks/...`.
+Alias `@/*` → `./*` (`tsconfig.json`) → rutas reales `@/services/...`.
 
 ### Mapa de integración por endpoint
 
@@ -471,6 +482,8 @@ Alias `@/*` → `./*` (`tsconfig.json`) → rutas propuestas `@/services/...`, `
 | `DELETE /complaints/{id}/assignment` | `/quejas/[id]` | `lib/store.ts` (`unassignComplaint`). |
 | `GET /complaints/{id}/investigation` | `/quejas/[id]` | `investigation-section.tsx` (prop `investigation`). |
 | `PUT /complaints/{id}/investigation` | `/quejas/[id]` | `lib/store.ts` (`updateInvestigation`) + `investigation-section.tsx` (`onSave`). |
+| `POST /complaints/{id}/merchant-escalations` | `/quejas/[id]` | `lib/store.ts` (`escalateToMerchant`) + `merchant-escalation-section.tsx`. |
+| `POST /complaints/{id}/merchant-escalations/close` | `/quejas/[id]` | `lib/store.ts` (`closeMerchantEscalation`) + `merchant-escalation-section.tsx`. |
 | `GET /complaints/{id}/evidence` | `/quejas/[id]` | `evidence-section.tsx` (prop `evidences`). |
 | `POST /complaints/{id}/evidence` | `/quejas/[id]` | `lib/store.ts` (`addEvidence`) + `evidence-section.tsx` (`onAdd`). |
 | `GET .../evidence/{id}` | `/quejas/[id]` | `evidence-section.tsx` (acción "ver"). |
@@ -480,7 +493,7 @@ Alias `@/*` → `./*` (`tsconfig.json`) → rutas propuestas `@/services/...`, `
 | `GET /notifications` | layout global | `useComplaintStore.notifications` (`lib/store.ts`); UI `notifications/notification-center.tsx` + `notification-item.tsx`. |
 | `POST /notifications/{id}/read` | layout global | `lib/store.ts` (`markNotificationAsRead`). |
 | `POST /notifications/read-all` | layout global | `lib/store.ts` (`markAllNotificationsAsRead`). |
-| `GET /notifications/unread-count` | `notification-button.tsx` | `layout/notification-button.tsx` + `getUnreadNotificationCount`. |
+| `GET /notifications/unread-count` | layout global | `notification-center.tsx` (badge del ícono de campana) + `getUnreadNotificationCount`. |
 
 ## 12. Mapeo Mock → API
 
@@ -497,6 +510,8 @@ Alias `@/*` → `./*` (`tsconfig.json`) → rutas propuestas `@/services/...`, `
 | `assignComplaint()`/`reassignComplaint()` | `/complaints/{id}/assignment` | PUT | Reemplazar acción local |
 | `unassignComplaint()` | `/complaints/{id}/assignment` | DELETE | Reemplazar acción local |
 | `updateInvestigation()` | `/complaints/{id}/investigation` | PUT | Reemplazar acción local |
+| `escalateToMerchant()` | `/complaints/{id}/merchant-escalations` | POST | Reemplazar acción local |
+| `closeMerchantEscalation()` | `/complaints/{id}/merchant-escalations/close` | POST | Reemplazar acción local |
 | `addEvidence()` | `/complaints/{id}/evidence` | POST | Reemplazar acción local |
 | `addNote()` | `/complaints/{id}/notes` | POST | Reemplazar acción local |
 | `addHistoryEvent()` | `/complaints/{id}/history` | POST (propuesta) | `POR DEFINIR`: hoy frontend inyecta eventos locales |
@@ -511,7 +526,7 @@ Alias `@/*` → `./*` (`tsconfig.json`) → rutas propuestas `@/services/...`, `
 ```ts
 // types/complaint.ts
 export type ComplaintStatus =
-  | "recibido" | "investigando" | "manejando"
+  | "recibido" | "investigando" | "escalado_merchant" | "manejando"
   | "aprobado" | "rechazado" | "completado";
 export type ComplaintPriority = "baja" | "media" | "alta";
 
@@ -539,6 +554,7 @@ export interface Complaint {
   assignedAdvisor?: Advisor | null;
   description: string;
   investigation?: Investigation | null;
+  merchantEscalation?: MerchantEscalation | null; // ciclo más reciente de seguimiento con el merchant
   evidences?: Evidence[] | null;
   history?: ComplaintHistoryEvent[] | null;
   notes?: ComplaintNote[] | null;
@@ -550,6 +566,10 @@ export interface Investigation {
   transactionVerified: boolean; customerDataVerified: boolean;
   merchantDataVerified: boolean; paymentVerified: boolean;
   conclusion: string;
+}
+export interface MerchantEscalation {
+  escalatedAt: string; escalatedBy: string; note: string;
+  respondedAt: string | null; response: string | null; closedBy: string | null;
 }
 export interface Advisor { id: string; name: string; role: string; }
 export interface Evidence {
@@ -573,7 +593,7 @@ export interface ComplaintNote {
   createdAt: string; updatedAt?: string | null;
 }
 export type NotificationType =
-  | "assignment" | "status_change" | "investigation"
+  | "assignment" | "status_change" | "investigation" | "merchant"
   | "evidence" | "note" | "resolution";
 export interface Notification {
   id: string; type: NotificationType; title: string;
@@ -678,10 +698,13 @@ GET /complaints?view=mine&status=investigando,status&priority=alta&date=7d&sort=
 10. [ ] `GET/POST /complaints/{id}/notes`.
 11. [ ] `GET /complaints/{id}/history`.
 12. [ ] `POST /notifications/{id}/read` + `/read-all`.
-13. [ ] Definir auth + usuario actual (§17).
-14. [ ] Coordinar paginación (§16) y filtros server-side (§15).
-15. [ ] Resolver generación de notificaciones/historial (¿backend los crea o frontend los inyecta?).
+13. [ ] `POST /complaints/{id}/merchant-escalations` + `/close` (§3.4).
+14. [ ] Definir auth + usuario actual (§17).
+15. [ ] Coordinar paginación (§16) y filtros server-side (§15).
+16. [ ] Resolver generación de notificaciones/historial (¿backend los crea o frontend los inyecta?).
 
 ---
+
+Para el modelo de base de datos (tablas, `schema.prisma`, setup Nest + Prisma) ver [`README_DATABASE.md`](./README_DATABASE.md).
 
 Ver también los archivos fuente: `types/complaint.ts`, `lib/store.ts`, `lib/complaint-list.ts`, `constants/complaint-flow.ts`, `constants/complaint-options.ts`, `constants/complaints.ts`, `data/mock-*.ts`.

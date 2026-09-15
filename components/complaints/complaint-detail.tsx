@@ -12,6 +12,7 @@ import { ComplaintStateAction } from "@/components/complaints/complaint-state-ac
 import { ComplaintStatusBadge } from "@/components/complaints/complaint-status-badge";
 import InvestigationSection from "@/components/complaints/investigation-section";
 import EvidenceSection from "@/components/complaints/evidence-section";
+import MerchantEscalationSection from "@/components/complaints/merchant-escalation-section";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageContainer } from "@/components/layout/page-container";
 import type { ActionResult } from "@/lib/store";
@@ -37,6 +38,7 @@ function TextOrDash({ value }: { value?: string | null }) { return <>{value && v
 const SECTION_LINKS = [
   { id: "resumen", label: "Resumen" },
   { id: "investigacion", label: "Investigación" },
+  { id: "seguimiento-merchant", label: "Seguimiento merchant" },
   { id: "evidencias", label: "Evidencias" },
   { id: "notas", label: "Notas" },
   { id: "resolucion", label: "Resolución" },
@@ -45,7 +47,7 @@ const SECTION_LINKS = [
 
 /** Ejecuta una operación de negocio simulando latencia, con exclusión por queja y feedback al usuario. */
 function useComplaintOperation() {
-  return async (complaintId: string, run: () => ActionResult, success: { title: string; description?: string }): Promise<ActionResult> => {
+  return async (complaintId: string, run: () => Promise<ActionResult>, success: { title: string; description?: string }): Promise<ActionResult> => {
     if (!beginComplaintOperation(complaintId)) {
       const busy: ActionResult = { ok: false, error: "BUSY", message: "Hay una operación en curso para esta queja." };
       toast.error("Operación en curso", busy.message);
@@ -53,7 +55,7 @@ function useComplaintOperation() {
     }
     try {
       await delay(OP_DELAY);
-      const result = run();
+      const result = await run();
       if (result.ok) toast.success(success.title, success.description);
       else toast.error("La operación no se completó", result.message ?? "Intenta nuevamente.");
       return result;
@@ -71,7 +73,7 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
   // Get from global store instead of local state
   const complaint = useComplaintStore((s) => s.getComplaintById(initialComplaint.id)) ?? initialComplaint;
   const status = complaint.status;
-  const { approveComplaint, rejectComplaint, completeComplaint, updateComplaintStatus, assignComplaint, reassignComplaint, unassignComplaint, updateInvestigation, addEvidence, addInternalNote } = useComplaintStore();
+  const { approveComplaint, rejectComplaint, completeComplaint, updateComplaintStatus, assignComplaint, reassignComplaint, unassignComplaint, updateInvestigation, escalateToMerchant, closeMerchantEscalation, addEvidence, addInternalNote } = useComplaintStore();
   const runOperation = useComplaintOperation();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const caseId = displayId(complaint.id);
@@ -130,6 +132,24 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
     return result.ok;
   }
 
+  async function handleEscalateToMerchant(note: string): Promise<boolean> {
+    const result = await runOperation(
+      complaint.id,
+      () => escalateToMerchant(complaint.id, note),
+      { title: "Caso enviado al merchant", description: "Queda en espera de respuesta." },
+    );
+    return result.ok;
+  }
+
+  async function handleCloseMerchantEscalation(response: string): Promise<boolean> {
+    const result = await runOperation(
+      complaint.id,
+      () => closeMerchantEscalation(complaint.id, response),
+      { title: "Seguimiento cerrado", description: "El caso volvió a Investigando." },
+    );
+    return result.ok;
+  }
+
   async function handleAddEvidence(evidence: NonNullable<Complaint["evidences"]>[number]): Promise<boolean> {
     const result = await runOperation(
       complaint.id,
@@ -181,9 +201,11 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
       ? { kind: "transition" as const, label: "Iniciar investigación", target: "investigando" as const }
       : status === "investigando"
         ? { kind: "transition" as const, label: "Iniciar manejo", target: "manejando" as const }
-        : status === "manejando" || status === "aprobado" || status === "rechazado"
-          ? { kind: "anchor" as const, label: status === "manejando" ? "Ir a resolución" : "Completar caso", href: "#resolucion" }
-          : null;
+        : status === "escalado_merchant"
+          ? { kind: "anchor" as const, label: "Ver seguimiento", href: "#seguimiento-merchant" }
+          : status === "manejando" || status === "aprobado" || status === "rechazado"
+            ? { kind: "anchor" as const, label: status === "manejando" ? "Ir a resolución" : "Completar caso", href: "#resolucion" }
+            : null;
 
   const investigationChecks = complaint.investigation
     ? [complaint.investigation.transactionVerified, complaint.investigation.customerDataVerified, complaint.investigation.merchantDataVerified, complaint.investigation.paymentVerified].filter(Boolean).length
@@ -248,6 +270,7 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
                 <p className="hidden truncate text-xs text-slate-400 sm:block">
                   {status === "recibido" && "Lista para iniciar la investigación."}
                   {status === "investigando" && "Investigación en curso."}
+                  {status === "escalado_merchant" && "En espera de respuesta del merchant."}
                   {status === "manejando" && "Lista para decisión en Resolución."}
                   {(status === "aprobado" || status === "rechazado") && "Pendiente de completar el caso."}
                 </p>
@@ -302,6 +325,15 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
 
             <div id="investigacion" className="scroll-mt-32">
               <InvestigationSection investigation={complaint.investigation} status={complaint.status} onSave={handleSaveInvestigation} />
+            </div>
+
+            <div id="seguimiento-merchant" className="scroll-mt-32">
+              <MerchantEscalationSection
+                status={complaint.status}
+                escalation={complaint.merchantEscalation}
+                onEscalate={handleEscalateToMerchant}
+                onClose={handleCloseMerchantEscalation}
+              />
             </div>
 
             <div id="evidencias" className="scroll-mt-32">
@@ -383,6 +415,7 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
               <p className="mt-1.5 text-sm text-slate-300">
                 {status === "recibido" && "Iniciar investigación"}
                 {status === "investigando" && "Completar investigación e iniciar manejo"}
+                {status === "escalado_merchant" && "Registrar la respuesta del merchant para continuar"}
                 {status === "manejando" && "Aprobar o rechazar en Resolución"}
                 {(status === "aprobado" || status === "rechazado") && "Completar el caso"}
                 {status === "completado" && "Sin acciones pendientes"}

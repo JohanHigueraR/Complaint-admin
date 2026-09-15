@@ -1,15 +1,14 @@
 import type { Notification } from "@/types/complaint";
 import { mockNotifications } from "@/data/mock-notifications";
 import { NotificationsService } from "@/services/contracts/notifications.service";
+import { ServiceError } from "@/services/service-error";
 
 /** Mock de notificaciones.
- * Quien lo usa: notification-center, header badge, getUnreadNotificationCount.
- * Nota architectural: los mismos eventos de negocio que actualizan quejas tambien producen
- * notificaciones en el store local. Cuando se conecte API, es probable que la fuente unica de
- * notificaciones sea el backend, y que el frontend Mantenga solamente un cache.
- *
- * POR DEFINIR como se sincroniza la notificacion generada por una accion de negocio (p. ej. "Queja aprobada")
- * con el servicio de notificaciones. En el estado actual, la notificacion se crea localmente dentro del store. */
+ * Quien lo usa: notification-center, header badge, getUnreadNotificationCount, lib/store.ts.
+ * Nota: MockComplaintsService escribe en el mismo arreglo `mockNotifications` (import
+ * compartido) al generar notificaciones como efecto secundario de una acción de negocio
+ * (p. ej. "Queja aprobada"); este servicio solo lee/actualiza ese mismo storage. Cuando se
+ * conecte la API real, ese mismo storage lo maneja el backend y este archivo deja de usarse. */
 export class MockNotificationsService implements NotificationsService {
   async getNotifications(_complaintId?: string): Promise<Notification[]> {
     return [...mockNotifications];
@@ -21,7 +20,7 @@ export class MockNotificationsService implements NotificationsService {
 
   async markNotificationAsRead(id: string): Promise<Notification> {
     const index = mockNotifications.findIndex((n) => n.id === id);
-    if (index === -1) throw new Error("NOT_FOUND");
+    if (index === -1) throw new ServiceError("NOT_FOUND", "La notificación no existe.");
     const updated: Notification = { ...mockNotifications[index], read: true };
     mockNotifications[index] = updated;
     return updated;

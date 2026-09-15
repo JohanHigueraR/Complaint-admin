@@ -3,6 +3,7 @@ import { ComplaintPriority, ComplaintStatus } from "@/types/complaint";
 export const complaintStatusLabels: Record<ComplaintStatus, string> = {
   recibido: "Recibido",
   investigando: "Investigando",
+  escalado_merchant: "Escalado a merchant",
   manejando: "Manejando",
   aprobado: "Aprobado",
   rechazado: "Rechazado",

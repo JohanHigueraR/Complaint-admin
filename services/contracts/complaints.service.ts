@@ -29,6 +29,14 @@ export interface ComplaintsService {
   /** Quien lo usa: /quejas/[id], sección de investigación. */
   updateInvestigation(id: string, investigation: NonNullable<Investigation>): Promise<Complaint>;
 
+  /** Envía el caso al merchant (investigando → escalado_merchant). Requiere nota no vacía.
+   * Quien lo usa: /quejas/[id], merchant-escalation-section.tsx. Ver README_BACKEND §3.4. */
+  escalateToMerchant(id: string, note: string): Promise<Complaint>;
+
+  /** Registra la respuesta del merchant y cierra el seguimiento (escalado_merchant → investigando).
+   * Quien lo usa: /quejas/[id], merchant-escalation-section.tsx. Ver README_BACKEND §3.4. */
+  closeMerchantEscalation(id: string, response: string): Promise<Complaint>;
+
   /** Quien lo usa: /quejas/[id], sección de evidencias. */
   addEvidence(id: string, evidence: Evidence): Promise<Complaint>;
 

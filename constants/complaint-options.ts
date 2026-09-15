@@ -1,6 +1,6 @@
 import type { ComplaintStatus } from "@/types/complaint";
 
-export const pendingStatuses: ComplaintStatus[] = ["recibido", "investigando", "manejando"];
+export const pendingStatuses: ComplaintStatus[] = ["recibido", "investigando", "escalado_merchant", "manejando"];
 export const completedStatuses: ComplaintStatus[] = ["aprobado", "rechazado", "completado"];
 
 export const complaintTypes = [

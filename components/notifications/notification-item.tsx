@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, CheckCircle2, AlertCircle, FileText, Paperclip, Square } from "lucide-react";
+import { Bell, Building2, CheckCircle2, AlertCircle, FileText, Paperclip, Square } from "lucide-react";
 import Link from "next/link";
 import type { Notification } from "@/types/complaint";
 
@@ -24,6 +24,8 @@ export function NotificationItem({ notification, onMarkAsRead }: NotificationIte
         return <Square size={16} className="text-violet-400" />;
       case "resolution":
         return <CheckCircle2 size={16} className="text-emerald-400" />;
+      case "merchant":
+        return <Building2 size={16} className="text-orange-400" />;
       default:
         return <Bell size={16} className="text-slate-400" />;
     }

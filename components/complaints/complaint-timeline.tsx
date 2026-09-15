@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Check, CheckCircle2, History, Inbox, Paperclip, Search, StickyNote, UserRound, XCircle } from "lucide-react";
+import { ArrowRight, Building2, Check, CheckCircle2, History, Inbox, MessageSquareReply, Paperclip, Search, StickyNote, UserRound, XCircle } from "lucide-react";
 import type { ComplaintHistoryEvent } from "@/types/complaint";
 import { formatDateNormalized } from "@/lib/format-date";
 
@@ -12,6 +12,8 @@ function Icon({ type }: { type: string }) {
     case "evidence_added": return <Paperclip size={15} className="text-slate-300" aria-hidden="true" />;
     case "internal_note_added": return <StickyNote size={15} className="text-violet-300" aria-hidden="true" />;
     case "assignment": return <UserRound size={15} className="text-sky-300" aria-hidden="true" />;
+    case "merchant_escalated": return <Building2 size={15} className="text-orange-300" aria-hidden="true" />;
+    case "merchant_response_received": return <MessageSquareReply size={15} className="text-orange-300" aria-hidden="true" />;
     case "status_change": return <ArrowRight size={15} className="text-slate-400" aria-hidden="true" />;
     case "approved": return <Check size={15} className="text-emerald-300" aria-hidden="true" />;
     case "rejected": return <XCircle size={15} className="text-rose-300" aria-hidden="true" />;
@@ -27,6 +29,7 @@ function categoryOf(type: string): string {
   if (type === "investigation_started" || type === "investigation_updated") return "Investigación";
   if (type === "evidence_added") return "Evidencia";
   if (type === "internal_note_added") return "Nota interna";
+  if (type === "merchant_escalated" || type === "merchant_response_received") return "Merchant";
   if (type === "approved" || type === "rejected") return "Resolución";
   if (type === "completed") return "Cierre";
   return "Estado";

@@ -36,7 +36,7 @@ export default function InvestigationSection({
   status: string;
   onSave?: (inv: Investigation) => Promise<boolean> | boolean | void;
 }) {
-  const readOnly = !["investigando", "manejando"].includes(status);
+  const readOnly = !["investigando", "manejando", "escalado_merchant"].includes(status);
   const notStarted = status === "recibido" && !initial;
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

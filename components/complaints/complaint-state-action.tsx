@@ -13,14 +13,12 @@ interface ComplaintStateActionProps {
   onTransition: (to: ComplaintStatus) => Promise<boolean>;
 }
 
-/** Transiciones gestionadas aquí (inicio de etapas). Las decisiones de resolución viven en el módulo de Resolución. */
-const SIMPLE_TARGETS: ComplaintStatus[] = ["investigando", "manejando"];
-
 export function ComplaintStateAction({ status, onTransition }: ComplaintStateActionProps) {
   const [pending, setPending] = useState<StatusAction | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const actions = getAvailableActions(status).filter((action) => SIMPLE_TARGETS.includes(action.targetStatus));
+  // Solo transiciones "simples" (sin datos adicionales); las dedicadas (escalar/cerrar merchant, resolución) tienen su propia UI.
+  const actions = getAvailableActions(status).filter((action) => action.kind === "simple");
 
   async function execute(action: StatusAction) {
     if (isLoading) return;

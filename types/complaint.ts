@@ -2,6 +2,7 @@
 export type ComplaintStatus =
   | "recibido"
   | "investigando"
+  | "escalado_merchant"
   | "manejando"
   | "aprobado"
   | "rechazado"
@@ -48,6 +49,8 @@ export interface Complaint {
   description: string;
   /** Información recopilada durante la investigación del caso (opcional, mock/local). */
   investigation?: Investigation | null;
+  /** Envío(s) al merchant durante la investigación. Guarda el ciclo más reciente; el historial conserva ciclos anteriores. */
+  merchantEscalation?: MerchantEscalation | null;
   /** Evidencias y soportes asociados (mock/local). */
   evidences?: Evidence[] | null;
   /** Historial de eventos del caso (cronológico). */
@@ -77,6 +80,18 @@ export interface Advisor {
   id: string;
   name: string;
   role: string;
+}
+
+/** Ciclo de seguimiento con el merchant durante la investigación. No es una decisión de resolución. */
+export interface MerchantEscalation {
+  escalatedAt: string;
+  escalatedBy: string;
+  /** Qué se le pidió/informó al merchant. */
+  note: string;
+  respondedAt: string | null;
+  /** Qué contestó el merchant. */
+  response: string | null;
+  closedBy: string | null;
 }
 
 export interface Evidence {
@@ -123,7 +138,8 @@ export type NotificationType =
   | "investigation"
   | "evidence"
   | "note"
-  | "resolution";
+  | "resolution"
+  | "merchant";
 
 export interface Notification {
   id: string;

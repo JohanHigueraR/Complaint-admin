@@ -27,7 +27,7 @@ export default function EvidenceSection({
   status: string;
   onAdd?: (e: Evidence) => Promise<boolean> | boolean | void;
 }) {
-  const readOnly = !["investigando", "manejando"].includes(status);
+  const readOnly = !["investigando", "manejando", "escalado_merchant"].includes(status);
   const [preview, setPreview] = useState<Evidence | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -72,7 +72,7 @@ export default function EvidenceSection({
         {items.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-700 bg-slate-950/40 p-5 text-sm leading-6 text-slate-400">
             No hay evidencias asociadas a este caso.
-            {!readOnly && <> Puedes agregar soportes mientras la queja esté en <span className="font-medium text-slate-200">Investigación</span> o <span className="font-medium text-slate-200">Manejo</span>.</>}
+            {!readOnly && <> Puedes agregar soportes mientras la queja esté en <span className="font-medium text-slate-200">Investigación</span>, <span className="font-medium text-slate-200">Escalado a merchant</span> o <span className="font-medium text-slate-200">Manejo</span>.</>}
           </div>
         ) : (
           <ul className="space-y-2">
