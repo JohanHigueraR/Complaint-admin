@@ -1,0 +1,102 @@
+// Tema oscuro/claro de esta app. NO es parte de app/shared/styles (esos archivos son
+// predefinidos y no se editan) — este archivo vive aparte y solo:
+//   1) agrega tokens que el sistema compartido no define (hovers, badges de estado/prioridad)
+//   2) redefine, bajo :root[data-theme='dark'], los MISMOS nombres de custom property que ya
+//      expone app/shared/styles/global.scss, con la paleta oscura que ya se venía usando en
+//      esta app (slate + azul) — no la de marca Softgic (naranja/teal), a pedido del usuario.
+//
+// Regla para cualquier componente nuevo/migrado: todo color que deba cambiar entre temas se
+// lee con var(--token), nunca con las variables de Sass ($orange, $charcoal, etc.) del
+// sistema compartido — esas son constantes de compilación y no reaccionan al cambio de tema.
+
+:root {
+  // El sidebar del sistema compartido es oscuro (charcoal) A PROPÓSITO en los DOS temas —
+  // no es "modo oscuro", es la estética de marca (ver $sidebar en _variables.scss). Por eso
+  // su texto necesita tokens propios, siempre claros, en vez de --text/--text-muted
+  // genéricos (que en tema claro son oscuros y quedarían invisibles sobre el sidebar).
+  --sidebar-text: #f5f7f8;
+  --sidebar-text-muted: #b9bcbe;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+
+  --surface-hover: rgba(77, 77, 79, 0.045);
+  --surface-sunken: rgba(77, 77, 79, 0.03);
+  --focus-ring: rgba(0, 169, 157, 0.16);
+
+  --status-recibido-bg: rgba(77, 77, 79, 0.08);
+  --status-recibido-fg: #4d4d4f;
+  --status-investigando-bg: rgba(2, 132, 199, 0.12);
+  --status-investigando-fg: #0284c7;
+  --status-escalado-bg: rgba(247, 148, 30, 0.16);
+  --status-escalado-fg: #e07f0c;
+  --status-manejando-bg: rgba(124, 58, 237, 0.12);
+  --status-manejando-fg: #7c3aed;
+  --status-aprobado-bg: rgba(0, 169, 157, 0.16);
+  --status-aprobado-fg: #008f85;
+  --status-rechazado-bg: rgba(217, 45, 32, 0.12);
+  --status-rechazado-fg: #d92d20;
+  --status-completado-bg: rgba(18, 183, 106, 0.16);
+  --status-completado-fg: #027a48;
+
+  --priority-alta-bg: rgba(217, 45, 32, 0.12);
+  --priority-alta-fg: #d92d20;
+  --priority-media-bg: rgba(247, 148, 30, 0.18);
+  --priority-media-fg: #b54708;
+  --priority-baja-bg: rgba(77, 77, 79, 0.07);
+  --priority-baja-fg: #6b6b6e;
+}
+
+// Paleta oscura "de siempre" de esta app (slate + azul), pensada para ser amigable a la
+// vista: fondos sin llegar a negro puro, texto sin llegar a blanco puro, acentos con
+// suficiente contraste pero no saturados al máximo.
+:root[data-theme="dark"] {
+  --bg: #0b1220;
+  --bg-elevated: #0f172a;
+  --sidebar: #020617;
+  --sidebar-hover: #1e293b;
+  --sidebar-active: #3b82f6;
+  --sidebar-text: #f1f5f9;
+  --sidebar-text-muted: #94a3b8;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --accent: #3b82f6;
+  --accent-strong: #60a5fa;
+  --accent-secondary: #38bdf8;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border: #1e293b;
+  --danger: #fb7185;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+
+  --surface-hover: rgba(241, 245, 249, 0.06);
+  --surface-sunken: rgba(2, 6, 23, 0.4);
+  --focus-ring: rgba(59, 130, 246, 0.35);
+
+  --status-recibido-bg: rgba(148, 163, 184, 0.16);
+  --status-recibido-fg: #cbd5e1;
+  --status-investigando-bg: rgba(56, 189, 248, 0.16);
+  --status-investigando-fg: #7dd3fc;
+  --status-escalado-bg: rgba(251, 146, 60, 0.18);
+  --status-escalado-fg: #fdba74;
+  --status-manejando-bg: rgba(167, 139, 250, 0.18);
+  --status-manejando-fg: #c4b5fd;
+  --status-aprobado-bg: rgba(52, 211, 153, 0.16);
+  --status-aprobado-fg: #6ee7b7;
+  --status-rechazado-bg: rgba(251, 113, 133, 0.16);
+  --status-rechazado-fg: #fda4af;
+  --status-completado-bg: rgba(45, 212, 191, 0.18);
+  --status-completado-fg: #5eead4;
+
+  --priority-alta-bg: rgba(251, 113, 133, 0.16);
+  --priority-alta-fg: #fda4af;
+  --priority-media-bg: rgba(251, 191, 36, 0.16);
+  --priority-media-fg: #fcd34d;
+  --priority-baja-bg: rgba(148, 163, 184, 0.14);
+  --priority-baja-fg: #cbd5e1;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.15s ease, color 0.15s ease;
+}

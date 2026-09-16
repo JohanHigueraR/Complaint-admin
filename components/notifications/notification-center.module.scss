@@ -1,0 +1,150 @@
+@use "../../app/theme-mixins" as *;
+
+.wrap {
+  position: relative;
+}
+
+.bell {
+  @include icon-button;
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.badge {
+  position: absolute;
+  right: 0.2rem;
+  top: 0.2rem;
+  display: inline-flex;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--accent);
+  padding: 0 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.panel {
+  @include panel;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 50;
+  display: flex;
+  width: min(24rem, calc(100vw - 2.5rem));
+  max-height: 26rem;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.panelHeader {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.panelSubtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.panelActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.markAllBtn {
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.4rem 0.5rem;
+  background: transparent;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.closeBtn {
+  @include icon-button;
+}
+
+.list {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.emptyIconOk {
+  color: var(--status-aprobado-fg);
+}
+
+.emptyTitle {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.emptyDescription {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.sectionLabel {
+  margin: 0;
+  padding: 0.75rem 1rem 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sectionDivider {
+  border-top: 1px solid var(--border);
+}

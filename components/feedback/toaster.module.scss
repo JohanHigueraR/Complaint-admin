@@ -1,0 +1,80 @@
+@use "../../app/theme-mixins" as *;
+
+.container {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 60;
+  display: flex;
+  width: 100%;
+  max-width: 24rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.card {
+  pointer-events: auto;
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-elevated);
+  padding: 0.75rem 1rem;
+  box-shadow: var(--shadow);
+}
+
+.cardError {
+  border-color: rgba(217, 45, 32, 0.3);
+}
+
+.cardInfo {
+  border-color: rgba(2, 132, 199, 0.3);
+}
+
+.cardSuccess {
+  border-color: rgba(0, 169, 157, 0.3);
+}
+
+.icon {
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.iconSuccess {
+  color: var(--status-aprobado-fg);
+}
+
+.iconError {
+  color: var(--danger);
+}
+
+.iconInfo {
+  color: var(--status-investigando-fg);
+}
+
+.body {
+  min-width: 0;
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.description {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.closeBtn {
+  @include icon-button;
+  padding: 0.15rem;
+}

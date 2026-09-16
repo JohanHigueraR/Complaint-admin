@@ -1,0 +1,139 @@
+@use "../../app/theme-mixins" as *;
+
+.section {
+  @include panel;
+  padding: 1.25rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.headerBetween {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.icon {
+  @include section-icon;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.empty {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.list {
+  position: relative;
+  margin: 1.25rem 0 0;
+  padding: 0 0 0 1.5rem;
+  border-left: 1px solid var(--border);
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  margin-bottom: 1.25rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.dot {
+  position: absolute;
+  left: -1.9rem;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.card {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-sunken);
+  padding: 0.75rem 0.9rem;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--accent);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.eventTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.category {
+  border-radius: 0.35rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.eventDescription {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.actor {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.iconReceived { color: var(--accent-strong); }
+.iconInvestigation { color: var(--status-escalado-fg); }
+.iconInvestigationDone { color: var(--status-aprobado-fg); }
+.iconEvidence { color: var(--text-muted); }
+.iconNote { color: var(--status-manejando-fg); }
+.iconAssignment { color: var(--status-investigando-fg); }
+.iconMerchant { color: var(--status-escalado-fg); }
+.iconStatus { color: var(--text-muted); }
+.iconApproved { color: var(--status-aprobado-fg); }
+.iconRejected { color: var(--status-rechazado-fg); }
+.iconDefault { color: var(--text-muted); }

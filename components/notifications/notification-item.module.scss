@@ -1,0 +1,81 @@
+.link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  background: var(--bg-elevated);
+}
+
+.itemUnread {
+  background: var(--surface-hover);
+}
+
+.itemUnread:hover {
+  background: var(--focus-ring);
+}
+
+.itemRead:hover {
+  background: var(--surface-hover);
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.body {
+  min-width: 0;
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.titleUnread {
+  color: var(--text);
+}
+
+.description {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.time {
+  margin: 0.5rem 0 0;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.dot {
+  flex-shrink: 0;
+  margin-top: 0.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.iconAssignment { color: var(--accent-strong); }
+.iconStatus { color: var(--priority-media-fg); }
+.iconInvestigation { color: var(--text-muted); }
+.iconEvidence { color: var(--status-aprobado-fg); }
+.iconNote { color: var(--status-manejando-fg); }
+.iconResolution { color: var(--status-completado-fg); }
+.iconMerchant { color: var(--status-escalado-fg); }
+.iconDefault { color: var(--text-muted); }

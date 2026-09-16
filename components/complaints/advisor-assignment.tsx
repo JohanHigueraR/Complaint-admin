@@ -5,6 +5,7 @@ import { LoaderCircle, UserRound, UserX } from "lucide-react";
 import AdvisorSelector from "./advisor-selector";
 import { mockAdvisors } from "@/data/mock-advisors";
 import type { Advisor } from "@/types/complaint";
+import styles from "./advisor-assignment.module.scss";
 
 export default function AdvisorAssignment({
   assigned,
@@ -44,18 +45,18 @@ export default function AdvisorAssignment({
 
   return (
     <div>
-      <div className="flex items-center gap-2.5">
-        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-semibold ${assigned ? "bg-blue-500/15 text-blue-200" : "bg-slate-800 text-slate-500"}`} aria-hidden="true">
+      <div className={styles.row}>
+        <span className={`${styles.avatar} ${assigned ? styles.avatarAssigned : ""}`} aria-hidden="true">
           {assigned ? assigned.name.trim().charAt(0).toUpperCase() : <UserX size={14} />}
         </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-slate-200">
-            {assigned ? assigned.name : <span className="font-normal text-slate-500">Sin asignar</span>}
+        <div className={styles.body}>
+          <p className={styles.name}>
+            {assigned ? assigned.name : <span className={styles.nameEmpty}>Sin asignar</span>}
           </p>
-          {assigned && <p className="truncate text-xs text-slate-500">{assigned.role}</p>}
+          {assigned && <p className={styles.role}>{assigned.role}</p>}
         </div>
         <button
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:border-slate-600 hover:bg-slate-800 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-blue-400"
+          className={styles.changeBtn}
           disabled={isProcessing}
           onClick={() => setOpen(true)}
           type="button"

@@ -1,0 +1,26 @@
+@use "../../app/theme-mixins" as *;
+
+.toggle {
+  @include icon-button;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+// Qué ícono se ve lo decide el atributo en <html>, puesto por el script inline antes de
+// pintar (ver app/layout.tsx) — así no depende del estado de React y no hay parpadeo ni
+// mismatch de hidratación entre servidor y cliente.
+.sun {
+  display: block;
+}
+
+.moon {
+  display: none;
+}
+
+:global(html[data-theme="dark"]) .sun {
+  display: none;
+}
+
+:global(html[data-theme="dark"]) .moon {
+  display: block;
+}

@@ -1,0 +1,361 @@
+@use "../../app/theme-mixins" as *;
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.breadcrumbLink {
+  border-radius: 0.25rem;
+  color: var(--accent-strong);
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--accent);
+  }
+
+  @include focus-ring;
+}
+
+.breadcrumbSep {
+  color: var(--text-muted);
+}
+
+.breadcrumbCurrent {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--text-muted);
+}
+
+.header {
+  @include panel;
+  margin-top: 1rem;
+  padding: 1.25rem;
+}
+
+.headerTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.headerLeft {
+  min-width: 0;
+}
+
+.idRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.idText {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.titleText {
+  margin-top: 0.4rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+
+  @include respond-to(mobile) {
+    font-size: 1.125rem;
+  }
+}
+
+.badgeRow {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.metaGrid {
+  display: grid;
+  flex-shrink: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 2rem;
+  text-align: right;
+}
+
+.metaLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.metaValue {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sectionNav {
+  margin-top: 1.25rem;
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 0.9rem;
+}
+
+.sectionNavLink {
+  flex-shrink: 0;
+  white-space: nowrap;
+  border-radius: var(--radius);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  @include focus-ring;
+}
+
+.actionBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0.75rem -0.25rem 0;
+  padding: 0.5rem 0.25rem;
+}
+
+.actionBarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  padding: 0.65rem 1rem;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+.actionBarLeft {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.actionBarHint {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+
+  @include respond-to(mobile) {
+    display: none;
+  }
+}
+
+.actionBarBtn {
+  @include button-primary;
+  flex-shrink: 0;
+}
+
+.progressWrap {
+  margin-top: 1rem;
+}
+
+.layoutGrid {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  gap: 1.25rem;
+
+  @include respond-to(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainCol {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.scrollAnchor {
+  scroll-margin-top: 8rem;
+}
+
+.panel {
+  @include panel;
+  padding: 1.25rem;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panelIcon {
+  color: var(--accent-strong);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.infoGrid {
+  margin-top: 1rem;
+  display: grid;
+  gap: 1rem 1.5rem;
+
+  @include respond-to(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoGrid2 {
+  @extend .infoGrid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.infoGrid3 {
+  @extend .infoGrid;
+  grid-template-columns: 1fr 1fr 1fr;
+
+  @include respond-to(tablet) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fullSpan {
+  grid-column: 1 / -1;
+}
+
+.description {
+  margin: 0;
+  max-width: 48rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.txIdInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--accent-strong);
+}
+
+.infoLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.infoValue {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.dash {
+  color: var(--text-muted);
+}
+
+.sidebar {
+  height: fit-content;
+  @include panel;
+  padding: 1.25rem;
+
+  @include respond-to(tablet) {
+    position: static;
+  }
+}
+
+.sidebarSticky {
+  @include respond-to(tablet) {
+    position: static;
+  }
+}
+
+.sidebarTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sidebarList {
+  margin: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebarFooter {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.sidebarFooterLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sidebarFooterText {
+  margin: 0.4rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.dateInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+}
+
+.backLink {
+  margin-top: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--accent);
+  }
+
+  @include focus-ring;
+}
+
+.historyWrap {
+  margin-top: 1.25rem;
+}

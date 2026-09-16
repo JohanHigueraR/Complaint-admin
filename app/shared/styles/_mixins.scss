@@ -1,0 +1,26 @@
+@use 'variables' as *;
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == tablet {
+    @media (max-width: 960px) {
+      @content;
+    }
+  } @else if $breakpoint == mobile {
+    @media (max-width: 820px) {
+      @content;
+    }
+  }
+}
+
+@mixin panel {
+  background: $bg-elevated;
+  border: 1px solid $border;
+  border-radius: $radius;
+}
+
+@mixin focus-ring {
+  &:focus {
+    outline: 2px solid rgba($teal, 0.35);
+    border-color: $teal;
+  }
+}

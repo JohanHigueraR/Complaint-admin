@@ -1,0 +1,82 @@
+@use "../../app/theme-mixins" as *;
+
+// Colores propios (--sidebar-text*), no los genéricos --text/--text-muted: el sidebar es
+// oscuro en los dos temas (ver app/theme.scss), así que su texto siempre debe ser claro.
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--sidebar-text-muted);
+  text-decoration: none;
+  outline: none;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--sidebar-hover);
+    color: var(--sidebar-text);
+  }
+
+  &:hover .icon {
+    color: var(--sidebar-text);
+  }
+
+  &:hover .count {
+    background: var(--sidebar-hover);
+  }
+
+  @include focus-ring;
+}
+
+:global(html[data-sidebar="collapsed"]) .item {
+  justify-content: center;
+  padding: 0.6rem;
+}
+
+.itemActive {
+  background: var(--sidebar-hover);
+  color: var(--sidebar-active);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--sidebar-text-muted);
+}
+
+.iconActive {
+  color: var(--sidebar-active);
+}
+
+.label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:global(html[data-sidebar="collapsed"]) .label {
+  display: none;
+}
+
+.count {
+  min-width: 1.5rem;
+  border-radius: 0.4rem;
+  padding: 0.15rem 0.4rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  background: var(--sidebar-hover);
+  color: var(--sidebar-text-muted);
+}
+
+:global(html[data-sidebar="collapsed"]) .count {
+  display: none;
+}
+
+.countActive {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--sidebar-active);
+}

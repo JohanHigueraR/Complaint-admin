@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { Bell, X, CheckCircle2 } from "lucide-react";
 import { useComplaintStore } from "@/lib/store";
 import { NotificationItem } from "./notification-item";
+import styles from "./notification-center.module.scss";
 
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,36 +44,31 @@ export function NotificationCenter() {
   const hasUnread = unreadCount > 0;
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Notification Bell Button */}
+    <div className={styles.wrap} ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label={hasUnread ? `Notificaciones (${unreadCount} sin leer)` : "Notificaciones"}
-        className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-blue-400"
+        className={styles.bell}
       >
         <Bell size={19} aria-hidden="true" />
         {hasUnread && (
-          <span className="absolute right-1 top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-500 px-1 text-[11px] font-semibold tabular-nums text-white">
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
+          <span className={styles.badge}>{unreadCount > 9 ? "9+" : unreadCount}</span>
         )}
       </button>
 
-      {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 flex max-h-[26rem] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl shadow-black/50">
-          {/* Header */}
-          <div className="flex shrink-0 items-center justify-between border-b border-slate-800 px-4 py-3">
+        <div className={styles.panel}>
+          <div className={styles.panelHeader}>
             <div>
-              <h2 className="text-sm font-semibold text-slate-100">Notificaciones</h2>
-              <p className="text-xs text-slate-500">{hasUnread ? `${unreadCount} sin leer` : "Todo al día"}</p>
+              <h2 className={styles.panelTitle}>Notificaciones</h2>
+              <p className={styles.panelSubtitle}>{hasUnread ? `${unreadCount} sin leer` : "Todo al día"}</p>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className={styles.panelActions}>
               {hasUnread && (
                 <button
                   onClick={() => markAllNotificationsAsRead()}
-                  className="rounded-lg px-2 py-1.5 text-xs font-medium text-blue-300 transition-colors hover:bg-slate-800 hover:text-blue-200"
+                  className={styles.markAllBtn}
                   title="Marcar todas como leídas"
                 >
                   Marcar leídas
@@ -80,7 +76,7 @@ export function NotificationCenter() {
               )}
               <button
                 onClick={() => setIsOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-100"
+                className={styles.closeBtn}
                 aria-label="Cerrar"
               >
                 <X size={16} aria-hidden="true" />
@@ -88,29 +84,28 @@ export function NotificationCenter() {
             </div>
           </div>
 
-          {/* Notifications List */}
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className={styles.list}>
             {notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-6 py-12 text-center text-slate-400">
-                <span className="grid h-11 w-11 place-items-center rounded-xl border border-slate-800 bg-slate-800/60 text-slate-500">
-                  <Bell size={20} aria-hidden="true" className="opacity-70" />
+              <div className={styles.emptyState}>
+                <span className={styles.emptyIcon}>
+                  <Bell size={20} aria-hidden="true" />
                 </span>
-                <p className="mt-3 text-sm font-medium text-slate-300">No tienes notificaciones</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Las acciones sobre tus casos aparecerán aquí.</p>
+                <p className={styles.emptyTitle}>No tienes notificaciones</p>
+                <p className={styles.emptyDescription}>Las acciones sobre tus casos aparecerán aquí.</p>
               </div>
             ) : unreadNotifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-6 py-12 text-center text-slate-400">
-                <span className="grid h-11 w-11 place-items-center rounded-xl border border-slate-800 bg-slate-800/60 text-emerald-300">
-                  <CheckCircle2 size={20} aria-hidden="true" className="opacity-80" />
+              <div className={styles.emptyState}>
+                <span className={`${styles.emptyIcon} ${styles.emptyIconOk}`}>
+                  <CheckCircle2 size={20} aria-hidden="true" />
                 </span>
-                <p className="mt-3 text-sm font-medium text-slate-300">No tienes notificaciones nuevas</p>
-                <p className="mt-1 text-xs text-slate-500">Las anteriores siguen disponibles abajo.</p>
+                <p className={styles.emptyTitle}>No tienes notificaciones nuevas</p>
+                <p className={styles.emptyDescription}>Las anteriores siguen disponibles abajo.</p>
               </div>
             ) : null}
 
             {unreadNotifications.length > 0 && (
               <div>
-                <p className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Nuevas</p>
+                <p className={styles.sectionLabel}>Nuevas</p>
                 {unreadNotifications.map((notif) => (
                   <NotificationItem
                     key={notif.id}
@@ -122,8 +117,8 @@ export function NotificationCenter() {
             )}
 
             {readNotifications.length > 0 && (
-              <div className={unreadNotifications.length > 0 ? "border-t border-slate-800" : undefined}>
-                <p className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Anteriores</p>
+              <div className={unreadNotifications.length > 0 ? styles.sectionDivider : undefined}>
+                <p className={styles.sectionLabel}>Anteriores</p>
                 {readNotifications.map((notif) => (
                   <NotificationItem
                     key={notif.id}

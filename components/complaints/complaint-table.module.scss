@@ -1,0 +1,448 @@
+// Usa var(--token) para reaccionar al toggle claro/oscuro. No reutiliza
+// <ComplaintStatusBadge>/<ComplaintPriorityBadge> — ver nota en complaint-table.tsx.
+@use "../../app/theme-mixins" as *;
+
+.tableWrap {
+  display: none;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+
+  // Scrollbar delgada pero siempre visible: en una tabla ancha dentro de un layout con
+  // sidebar, el scroll horizontal es la forma normal de usarla en portátiles, así que debe
+  // ser fácil de agarrar con el mouse y no solo utilizable por gesto táctil.
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+
+  &::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border: 2px solid var(--bg-elevated);
+    border-radius: 999px;
+    background: var(--border);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+}
+
+@media (min-width: 821px) {
+  .tableWrap {
+    display: block;
+  }
+}
+
+// Difuminado detrás de la barra flotante (ver .floatingScrollbar): sin esto, la última fila
+// visible queda pegada justo debajo de la barra, dando la impresión de que la data se
+// superpone con el control de scroll. El degradado hace que el contenido se desvanezca sobre
+// el fondo antes de llegar a la barra, separándolos visualmente. No intercepta clics/scroll.
+.floatingScrollbarBackdrop {
+  position: fixed;
+  bottom: 0;
+  z-index: 39;
+  height: 2.75rem;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--bg-elevated) 75%);
+}
+
+@media (max-width: 820px) {
+  .floatingScrollbarBackdrop {
+    display: none !important;
+  }
+}
+
+// Barra de scroll horizontal flotante: cuando la tabla es más alta que la pantalla, su propia
+// barra queda al fondo de la tabla (después de todas las filas) y hay que bajar toda la
+// página para alcanzarla. Esta réplica se fija al fondo del viewport mientras la tabla esté
+// visible y su scrollbar real todavía no se vea, y sincroniza el scroll con la tabla real
+// (ver complaint-table.tsx). Se oculta por completo si la tabla entra sin scroll horizontal.
+.floatingScrollbar {
+  position: fixed;
+  bottom: 0.75rem;
+  z-index: 40;
+  height: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+
+  &::-webkit-scrollbar {
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border: 2px solid var(--bg-elevated);
+    border-radius: 999px;
+    background: var(--border);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+}
+
+.floatingScrollbarSpacer {
+  height: 1px;
+}
+
+@media (max-width: 820px) {
+  .floatingScrollbar {
+    display: none !important;
+  }
+}
+
+.table {
+  width: 100%;
+  min-width: 60rem;
+  // separate (no collapse): con la primera columna en position: sticky, border-collapse
+  // hace que el fondo de la celda fija no cubra bien la columna y el contenido de al lado se
+  // alcance a ver por debajo al scrollear (bug conocido de sticky + border-collapse).
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  th {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface-sunken);
+  }
+
+  th:first-child {
+    padding-left: 1.15rem;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 1.15rem;
+  }
+
+  // Primera columna fija: al scrollear horizontalmente en pantallas de portátil se conserva
+  // el caso/cliente a la vista, en vez de perder el contexto de qué fila se está viendo.
+  // Los tokens de superficie (--surface-hover, --surface-sunken, --focus-ring) son rgba()
+  // semitransparentes a propósito para poder superponerse sobre cualquier fondo; pero una
+  // celda "sticky" pinta por encima del contenido que scrollea detrás, así que si su fondo
+  // no es opaco ese contenido se alcanza a transparentar. Por eso cada estado compone el
+  // token sobre --bg-elevated con dos capas de background en la misma celda, en vez de
+  // asignarlo solo, para que quede opaco.
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: var(--bg-elevated);
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.06);
+  }
+
+  thead th:first-child {
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(var(--surface-sunken), var(--surface-sunken));
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.08);
+  }
+
+  tbody tr {
+    transition: background 0.12s ease;
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+
+    &:hover td:first-child {
+      background-color: var(--bg-elevated);
+      background-image: linear-gradient(var(--surface-hover), var(--surface-hover));
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+.rowMine {
+  background: var(--focus-ring);
+
+  td:first-child {
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(var(--focus-ring), var(--focus-ring));
+  }
+
+  &:hover td:first-child {
+    background-color: var(--bg-elevated);
+    background-image: linear-gradient(var(--surface-hover), var(--surface-hover));
+  }
+}
+
+.caseId {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.caseType {
+  margin: 0.15rem 0 0;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.customerName {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.customerTx {
+  margin: 0.1rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.advisorCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.advisorMine {
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+.advisorNone {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.nextStep {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.nextStepNone {
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+// Variantes de estado/prioridad — mismos tokens que usará el resto de la app (ver app/theme.scss).
+.statusRecibido {
+  background: var(--status-recibido-bg);
+  color: var(--status-recibido-fg);
+}
+
+.statusInvestigando {
+  background: var(--status-investigando-bg);
+  color: var(--status-investigando-fg);
+}
+
+.statusEscaladoMerchant {
+  background: var(--status-escalado-bg);
+  color: var(--status-escalado-fg);
+}
+
+.statusManejando {
+  background: var(--status-manejando-bg);
+  color: var(--status-manejando-fg);
+}
+
+.statusAprobado {
+  background: var(--status-aprobado-bg);
+  color: var(--status-aprobado-fg);
+}
+
+.statusRechazado {
+  background: var(--status-rechazado-bg);
+  color: var(--status-rechazado-fg);
+}
+
+.statusCompletado {
+  background: var(--status-completado-bg);
+  color: var(--status-completado-fg);
+}
+
+.priorityAlta {
+  background: var(--priority-alta-bg);
+  color: var(--priority-alta-fg);
+}
+
+.priorityMedia {
+  background: var(--priority-media-bg);
+  color: var(--priority-media-fg);
+}
+
+.priorityBaja {
+  background: var(--priority-baja-bg);
+  color: var(--priority-baja-fg);
+}
+
+.badge {
+  @include badge;
+}
+
+// Vista móvil: tarjetas
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 821px) {
+  .cards {
+    display: none;
+  }
+}
+
+.card {
+  @include panel;
+  display: block;
+  padding: 0.9rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease;
+
+  &:active {
+    border-color: var(--accent);
+  }
+}
+
+.cardMine {
+  border-color: var(--accent);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.cardId {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+.cardType {
+  margin: 0.15rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.cardDot {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border);
+}
+
+.cardNextStep {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.empty {
+  @include panel;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 16rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius);
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.emptyTitle {
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.emptyDescription {
+  margin: 0.35rem 0 0;
+  max-width: 22rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}

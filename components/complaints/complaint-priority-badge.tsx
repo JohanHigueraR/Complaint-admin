@@ -1,8 +1,13 @@
 import { complaintPriorityLabels } from "@/constants/complaints";
 import type { ComplaintPriority } from "@/types/complaint";
+import styles from "./complaint-priority-badge.module.scss";
 
-const styles: Record<ComplaintPriority, string> = { alta: "text-amber-300", media: "text-sky-300", baja: "text-slate-400" };
+const PRIORITY_CLASS: Record<ComplaintPriority, string> = {
+  alta: styles.alta,
+  media: styles.media,
+  baja: styles.baja,
+};
 
 export function ComplaintPriorityBadge({ priority }: { priority: ComplaintPriority }) {
-  return <span className={`text-xs font-medium ${styles[priority]}`}>{complaintPriorityLabels[priority]}</span>;
+  return <span className={`${styles.label} ${PRIORITY_CLASS[priority]}`}>{complaintPriorityLabels[priority]}</span>;
 }

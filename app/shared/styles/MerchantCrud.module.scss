@@ -1,0 +1,351 @@
+@use './variables' as *;
+@use './mixins' as *;
+@use './forms' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  padding-top: 0.85rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.15rem;
+}
+
+.tab {
+  border: 1px solid $border;
+  background: $white;
+  border-radius: $radius;
+  padding: 0.4rem 0.8rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: $text-muted;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    color: $charcoal;
+    border-color: #d0d5d8;
+  }
+}
+
+.tabActive {
+  background: rgba($teal, 0.1);
+  border-color: rgba($teal, 0.45);
+  color: $teal-dark;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.field {
+  @include form-field;
+}
+
+.primaryBtn {
+  @include form-btn-primary;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 7.5rem;
+}
+
+.btnSpinner {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  border: 2px solid rgba($white, 0.35);
+  border-top-color: $white;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ghostBtn {
+  @include form-btn-ghost;
+}
+
+.dangerBtn {
+  @include form-btn-danger;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(18rem, 0.75fr);
+  gap: 1rem;
+  width: 100%;
+  align-items: start;
+
+  @include respond-to(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gridWide {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.panel {
+  @include panel;
+  padding: 1.15rem 1.25rem 1.25rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+
+  h3 {
+    font-family: $font-ui;
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    color: $charcoal;
+  }
+
+  @include respond-to(mobile) {
+    padding: 1rem 0.85rem 1.05rem;
+  }
+}
+
+.form {
+  display: grid;
+  gap: 0.9rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  min-width: 0;
+  width: 100%;
+
+  @include respond-to(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.row3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  min-width: 0;
+  width: 100%;
+
+  @include respond-to(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tableWrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  margin: 0;
+  padding-bottom: 0.15rem;
+  border: 1px solid transparent;
+
+  @include respond-to(mobile) {
+    margin-inline: -0.15rem;
+    padding-inline: 0.15rem;
+  }
+}
+
+.table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.7rem 0.55rem;
+    border-bottom: 1px solid $border;
+    vertical-align: middle;
+  }
+
+  th {
+    color: $text-muted;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  td {
+    white-space: nowrap;
+  }
+
+  tbody tr:hover {
+    background: rgba($charcoal, 0.02);
+  }
+
+  @include respond-to(mobile) {
+    min-width: 32rem;
+    font-size: 0.82rem;
+
+    th,
+    td {
+      padding: 0.55rem 0.45rem;
+    }
+
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: $white;
+      box-shadow: 4px 0 8px rgba(77, 77, 79, 0.06);
+    }
+
+    thead th:first-child {
+      background: #f7f8f9;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+
+  .primaryBtn,
+  .ghostBtn,
+  .dangerBtn {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+  }
+}
+
+.formActions {
+  @include form-actions;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.35rem;
+  background: rgba($teal, 0.12);
+  color: $teal-dark;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-right: 0.25rem;
+  white-space: nowrap;
+}
+
+.badgeOk {
+  background: rgba(#12b76a, 0.14);
+  color: #027a48;
+}
+
+.badgeWarn {
+  background: rgba($warn, 0.2);
+  color: #b54708;
+}
+
+.badgeDanger {
+  background: rgba($danger, 0.14);
+  color: #b42318;
+}
+
+.badgeMuted {
+  background: rgba($charcoal, 0.07);
+  color: $text-muted;
+}
+
+.error {
+  color: $danger;
+  font-size: 0.875rem;
+}
+
+.hint {
+  color: $text-muted;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.empty {
+  color: $text-muted;
+  padding: 1rem 0;
+}
+
+.lineItems {
+  display: grid;
+  gap: 0.65rem;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 0.85rem;
+  background: rgba($charcoal, 0.015);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lineRow {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: end;
+  min-width: 0;
+  width: 100%;
+
+  select,
+  input {
+    @include form-control;
+  }
+
+  select {
+    @include form-select;
+  }
+
+  @include respond-to(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.metricCard {
+  @include panel;
+  padding: 0.95rem 1rem;
+
+  .label {
+    color: $text-muted;
+    font-size: 0.75rem;
+    font-weight: 650;
+  }
+
+  .value {
+    margin-top: 0.35rem;
+    font-size: 1.35rem;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    color: $charcoal;
+  }
+}

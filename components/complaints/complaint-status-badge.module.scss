@@ -1,0 +1,40 @@
+@use "../../app/theme-mixins" as *;
+
+.badge {
+  @include badge;
+}
+
+.recibido {
+  background: var(--status-recibido-bg);
+  color: var(--status-recibido-fg);
+}
+
+.investigando {
+  background: var(--status-investigando-bg);
+  color: var(--status-investigando-fg);
+}
+
+.escalado_merchant {
+  background: var(--status-escalado-bg);
+  color: var(--status-escalado-fg);
+}
+
+.manejando {
+  background: var(--status-manejando-bg);
+  color: var(--status-manejando-fg);
+}
+
+.aprobado {
+  background: var(--status-aprobado-bg);
+  color: var(--status-aprobado-fg);
+}
+
+.rechazado {
+  background: var(--status-rechazado-bg);
+  color: var(--status-rechazado-fg);
+}
+
+.completado {
+  background: var(--status-completado-bg);
+  color: var(--status-completado-fg);
+}

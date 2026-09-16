@@ -1,0 +1,129 @@
+@use "../../app/theme-mixins" as *;
+
+.section {
+  @include panel;
+  padding: 1.25rem;
+}
+
+.sectionDone {
+  border-color: var(--status-aprobado-fg);
+  background: var(--status-aprobado-bg);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.doneTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--status-aprobado-fg);
+}
+
+.description {
+  margin: 0.6rem 0 0;
+  max-width: 40rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.actionBtn {
+  @include button-primary;
+  min-width: 9rem;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.error {
+  @include error-banner;
+  margin-top: 0.75rem;
+}
+
+.overlay {
+  @include dialog-overlay;
+  z-index: 30;
+}
+
+.dialog {
+  @include dialog-box;
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dialogTitle {
+  @include dialog-title;
+}
+
+.dialogDescription {
+  @include dialog-description;
+}
+
+.closeBtn {
+  @include icon-button;
+}
+
+.dialogActions {
+  @include dialog-actions;
+}
+
+.cancelBtn {
+  border: none;
+  background: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+}
+
+.confirmBtn {
+  @include button-primary;
+  min-width: 7rem;
+}

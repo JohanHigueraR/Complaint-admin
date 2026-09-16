@@ -1,0 +1,97 @@
+@use "../../app/theme-mixins" as *;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-height);
+  flex-shrink: 0;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+@media (min-width: 640px) {
+  .header {
+    padding: 0 1.5rem;
+  }
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.menuBtn {
+  @include icon-button;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+@media (min-width: 1024px) {
+  .menuBtn {
+    display: none;
+  }
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.crumbSep {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.crumb {
+  display: none;
+  color: var(--text-muted);
+}
+
+@media (min-width: 640px) {
+  .crumb {
+    display: block;
+  }
+}
+
+.subtitle {
+  display: none;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+@media (min-width: 640px) {
+  .subtitle {
+    display: block;
+  }
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.divider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--border);
+}

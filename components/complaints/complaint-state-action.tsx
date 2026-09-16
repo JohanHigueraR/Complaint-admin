@@ -7,6 +7,7 @@ import { getAvailableActions, getStatusDescription, type StatusAction } from "@/
 import { complaintStatusLabels } from "@/constants/complaints";
 import { ComplaintStatusBadge } from "@/components/complaints/complaint-status-badge";
 import type { ComplaintStatus } from "@/types/complaint";
+import styles from "./complaint-state-action.module.scss";
 
 interface ComplaintStateActionProps {
   status: ComplaintStatus;
@@ -42,20 +43,20 @@ export function ComplaintStateAction({ status, onTransition }: ComplaintStateAct
 
   return (
     <>
-      <section aria-label="Estado actual del caso" className={`rounded-xl border p-5 sm:p-6 ${status === "completado" ? "border-emerald-500/25 bg-emerald-500/5" : "border-slate-800 bg-slate-900"}`}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <h2 className="text-sm font-semibold text-slate-200">Estado actual</h2>
+      <section aria-label="Estado actual del caso" className={`${styles.section} ${status === "completado" ? styles.sectionDone : ""}`}>
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            <h2 className={styles.title}>Estado actual</h2>
             <ComplaintStatusBadge status={status} />
-            {status === "completado" && <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-300"><CheckCircle2 size={16} aria-hidden="true" />Caso completado</span>}
+            {status === "completado" && <span className={styles.doneTag}><CheckCircle2 size={16} aria-hidden="true" />Caso completado</span>}
           </div>
         </div>
-        <p className="mt-2.5 max-w-2xl text-sm leading-6 text-slate-400">{getStatusDescription(status)}</p>
+        <p className={styles.description}>{getStatusDescription(status)}</p>
         {actions.length > 0 && (
-          <div className="mt-4 flex flex-wrap items-center gap-2.5 border-t border-slate-800/80 pt-4">
+          <div className={styles.actions}>
             {actions.map((action) => (
               <button
-                className="inline-flex min-w-36 items-center justify-center gap-2 rounded-xl bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+                className={styles.actionBtn}
                 disabled={isLoading}
                 key={action.targetStatus}
                 onClick={() => request(action)}
@@ -65,26 +66,26 @@ export function ComplaintStateAction({ status, onTransition }: ComplaintStateAct
                 {action.label}
               </button>
             ))}
-            <span className="text-xs text-slate-500">Esta acción avanzará el caso a “{actions.map((a) => complaintStatusLabels[a.targetStatus]).join(" · ")}”.</span>
+            <span className={styles.hint}>Esta acción avanzará el caso a “{actions.map((a) => complaintStatusLabels[a.targetStatus]).join(" · ")}”.</span>
           </div>
         )}
-        {error && <p className="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200" role="alert">{error}</p>}
+        {error && <p className={styles.error} role="alert">{error}</p>}
       </section>
 
       {pending && (
-        <div aria-modal="true" className="fixed inset-0 z-30 grid place-items-center bg-slate-950/70 p-4 backdrop-blur-[2px]" role="dialog">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
+        <div aria-modal="true" className={styles.overlay} role="dialog">
+          <div className={styles.dialog}>
+            <div className={styles.dialogHeader}>
               <div>
-                <h2 className="text-base font-semibold text-slate-100">¿{pending.label} esta queja?</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-400">Esta acción cambiará el estado de la queja a “{complaintStatusLabels[pending.targetStatus]}”.</p>
+                <h2 className={styles.dialogTitle}>¿{pending.label} esta queja?</h2>
+                <p className={styles.dialogDescription}>Esta acción cambiará el estado de la queja a “{complaintStatusLabels[pending.targetStatus]}”.</p>
               </div>
-              <button aria-label="Cerrar confirmación" className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-800 hover:text-slate-300" disabled={isLoading} onClick={() => { setPending(null); setError(null); }} type="button"><X size={17} /></button>
+              <button aria-label="Cerrar confirmación" className={styles.closeBtn} disabled={isLoading} onClick={() => { setPending(null); setError(null); }} type="button"><X size={17} /></button>
             </div>
-            {error && <p className="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200" role="alert">{error}</p>}
-            <div className="mt-6 flex justify-end gap-2.5">
-              <button className="rounded-xl px-3.5 py-2 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200" disabled={isLoading} onClick={() => { setPending(null); setError(null); }} type="button">Cancelar</button>
-              <button className="inline-flex min-w-28 items-center justify-center gap-2 rounded-xl bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-400 disabled:opacity-60" disabled={isLoading} onClick={() => execute(pending)} type="button">{isLoading ? <LoaderCircle className="animate-spin" size={16} aria-hidden="true" /> : pending.label}</button>
+            {error && <p className={styles.error} role="alert">{error}</p>}
+            <div className={styles.dialogActions}>
+              <button className={styles.cancelBtn} disabled={isLoading} onClick={() => { setPending(null); setError(null); }} type="button">Cancelar</button>
+              <button className={styles.confirmBtn} disabled={isLoading} onClick={() => execute(pending)} type="button">{isLoading ? <LoaderCircle className="animate-spin" size={16} aria-hidden="true" /> : pending.label}</button>
             </div>
           </div>
         </div>

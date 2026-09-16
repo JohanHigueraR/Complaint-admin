@@ -1,0 +1,339 @@
+@use "../../app/theme-mixins" as *;
+
+.section {
+  @include panel;
+  padding: 1.25rem;
+}
+
+.sectionApproved {
+  border-color: var(--status-aprobado-fg);
+  background: var(--status-aprobado-bg);
+}
+
+.sectionRejected {
+  border-color: var(--status-rechazado-fg);
+  background: var(--status-rechazado-bg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.headerBetween {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.icon {
+  @include section-icon;
+}
+
+.iconWaiting {
+  background: rgba(247, 148, 30, 0.16);
+  color: var(--status-escalado-fg);
+}
+
+.iconAmber {
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--status-manejando-fg);
+}
+
+.iconApproved {
+  background: var(--status-aprobado-bg);
+  color: var(--status-aprobado-fg);
+}
+
+.iconRejected {
+  background: var(--status-rechazado-bg);
+  color: var(--status-rechazado-fg);
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.placeholder {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.summaryBox {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 1rem;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.summaryRowLabel {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.summaryRowValue {
+  text-align: right;
+  color: var(--text);
+}
+
+.divider {
+  border-top: 1px solid var(--border);
+  padding-top: 0.65rem;
+}
+
+.dividerText {
+  margin: 0.25rem 0 0;
+  white-space: pre-wrap;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.footer {
+  margin-top: 1rem;
+}
+
+.completeBtn {
+  @include button-primary;
+  background: var(--status-aprobado-fg);
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+}
+
+.decisionBox {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 1rem;
+}
+
+.decisionLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.decisionGrid {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem 1.5rem;
+
+  @include respond-to(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.actionsGrid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+
+  @include respond-to(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.approveCard {
+  border: 1px solid var(--status-aprobado-fg);
+  border-radius: var(--radius);
+  background: var(--status-aprobado-bg);
+  padding: 1rem;
+}
+
+.rejectCard {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 1rem;
+}
+
+.approveBtn {
+  @include button-primary;
+  width: 100%;
+  justify-content: center;
+  background: var(--status-aprobado-fg);
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+}
+
+.rejectBtn {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--status-rechazado-fg);
+  background: transparent;
+  border-radius: var(--radius);
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 650;
+  color: var(--status-rechazado-fg);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--status-rechazado-bg);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.cardHint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.overlay {
+  @include dialog-overlay;
+}
+
+.dialog {
+  @include dialog-box;
+}
+
+.dialogTitle {
+  @include dialog-title;
+}
+
+.dialogDescription {
+  @include dialog-description;
+}
+
+.emphasis {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.emphasisApproved {
+  font-weight: 600;
+  color: var(--status-aprobado-fg);
+}
+
+.field {
+  margin-top: 1rem;
+}
+
+.label {
+  @include form-label;
+}
+
+.required {
+  color: var(--danger);
+}
+
+.textarea {
+  @include control;
+  margin-top: 0.5rem;
+  min-height: 7rem;
+  resize: vertical;
+
+  &:focus {
+    border-color: var(--status-rechazado-fg);
+    box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.15);
+  }
+}
+
+.error {
+  @include error-banner;
+  margin-top: 0.75rem;
+}
+
+.dialogActions {
+  @include dialog-actions;
+}
+
+.cancelBtn {
+  border: none;
+  background: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+}
+
+.confirmApproveBtn {
+  @include button-primary;
+  background: var(--status-aprobado-fg);
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+}
+
+.confirmRejectBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1rem;
+  background: var(--status-rechazado-fg);
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

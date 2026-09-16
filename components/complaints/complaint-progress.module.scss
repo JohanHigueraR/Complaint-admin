@@ -1,0 +1,113 @@
+@use "../../app/theme-mixins" as *;
+
+.section {
+  @include panel;
+  padding: 1.25rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.current {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stages {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .stages {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .stage {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.connector {
+  position: absolute;
+  left: -0.75rem;
+  top: 50%;
+  display: none;
+  width: 0.75rem;
+  height: 1px;
+  background: var(--border);
+}
+
+@media (min-width: 768px) {
+  .connector {
+    display: block;
+  }
+}
+
+.dot {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.dotDone {
+  background: var(--status-aprobado-bg);
+  color: var(--status-aprobado-fg);
+}
+
+.dotCurrent {
+  background: var(--accent);
+  color: #fff;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.labelCurrent {
+  color: var(--accent-strong);
+}
+
+.labelAlternative {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.labelExtra {
+  color: var(--status-escalado-fg);
+}
+
+.footer {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

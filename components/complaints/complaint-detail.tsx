@@ -26,14 +26,15 @@ import { complaintStatusLabels } from "@/constants/complaints";
 import { toast } from "@/lib/toast";
 import dynamic from "next/dynamic";
 import InternalNotesSection from "@/components/complaints/internal-notes-section";
+import styles from "./complaint-detail.module.scss";
 const ResolutionSection = dynamic(() => import("@/components/complaints/resolution-section"), { ssr: false });
 const moneyFormatter = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
 /** Latencia simulada de las operaciones (mock). */
 const OP_DELAY = 450;
 function delay(ms: number) { return new Promise<void>((resolve) => window.setTimeout(resolve, ms)); }
 function displayId(id: string) { return `#${id.replace("Q-", "CL-")}`; }
-function InfoRow({ label, children }: { label: string; children: ReactNode }) { return <div><dt className="text-xs text-slate-500">{label}</dt><dd className="mt-1 text-sm text-slate-200">{children}</dd></div>; }
-function TextOrDash({ value }: { value?: string | null }) { return <>{value && value.trim() ? value : <span className="text-slate-500">—</span>}</>; }
+function InfoRow({ label, children }: { label: string; children: ReactNode }) { return <div><dt className={styles.infoLabel}>{label}</dt><dd className={styles.infoValue}>{children}</dd></div>; }
+function TextOrDash({ value }: { value?: string | null }) { return <>{value && value.trim() ? value : <span className={styles.dash}>—</span>}</>; }
 
 const SECTION_LINKS = [
   { id: "resumen", label: "Resumen" },
@@ -215,46 +216,42 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
     <AppShell>
       <PageContainer>
         {/* Miga de pan */}
-        <nav aria-label="Miga de pan" className="flex items-center gap-2 text-sm">
-          <Link className="rounded text-blue-300 hover:text-blue-200 focus-visible:outline-2 focus-visible:outline-blue-400" href="/quejas">Quejas</Link>
-          <span className="text-slate-600">/</span>
-          <span className="font-mono text-slate-400">{caseId}</span>
+        <nav aria-label="Miga de pan" className={styles.breadcrumb}>
+          <Link className={styles.breadcrumbLink} href="/quejas">Quejas</Link>
+          <span className={styles.breadcrumbSep}>/</span>
+          <span className={styles.breadcrumbCurrent}>{caseId}</span>
         </nav>
 
         {/* Encabezado operativo */}
-        <header className="mt-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-lg font-semibold text-slate-100">{caseId}</span>
+        <header className={styles.header}>
+          <div className={styles.headerTop}>
+            <div className={styles.headerLeft}>
+              <div className={styles.idRow}>
+                <span className={styles.idText}>{caseId}</span>
                 <CopyButton label="ID de queja" value={complaint.id} />
               </div>
-              <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-slate-100 sm:text-2xl">{complaint.complaintType}</h1>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
+              <h1 className={styles.titleText}>{complaint.complaintType}</h1>
+              <div className={styles.badgeRow}>
                 <ComplaintStatusBadge status={status} />
                 <ComplaintPriorityBadge priority={complaint.priority} />
               </div>
             </div>
-            <dl className="grid shrink-0 grid-cols-2 gap-x-8 gap-y-3 text-right sm:text-left">
+            <dl className={styles.metaGrid}>
               <div>
-                <dt className="text-xs text-slate-500">Creada</dt>
-                <dd className="mt-0.5 text-xs tabular-nums text-slate-300">{formatDateNormalized(complaint.createdAt)}</dd>
+                <dt className={styles.metaLabel}>Creada</dt>
+                <dd className={styles.metaValue}>{formatDateNormalized(complaint.createdAt)}</dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-500">Actualizada</dt>
-                <dd className="mt-0.5 text-xs tabular-nums text-slate-300">{formatDateNormalized(complaint.updatedAt)}</dd>
+                <dt className={styles.metaLabel}>Actualizada</dt>
+                <dd className={styles.metaValue}>{formatDateNormalized(complaint.updatedAt)}</dd>
               </div>
             </dl>
           </div>
 
           {/* Navegación interna por secciones */}
-          <nav aria-label="Secciones del caso" className="mt-5 flex gap-1.5 overflow-x-auto border-t border-slate-800/80 pt-3.5">
+          <nav aria-label="Secciones del caso" className={styles.sectionNav}>
             {SECTION_LINKS.map((link) => (
-              <a
-                key={link.id}
-                href={`#${link.id}`}
-                className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-blue-400"
-              >
+              <a key={link.id} href={`#${link.id}`} className={styles.sectionNavLink}>
                 {link.label}
               </a>
             ))}
@@ -263,11 +260,11 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
 
         {/* Barra de acción principal persistente */}
         {primaryAction && (
-          <div className="sticky top-0 z-20 -mx-1 mt-3 px-1 py-2">
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-700/80 bg-slate-900/95 px-4 py-2.5 shadow-lg shadow-black/30 backdrop-blur">
-              <div className="flex min-w-0 items-center gap-2.5">
+          <div className={styles.actionBar}>
+            <div className={styles.actionBarInner}>
+              <div className={styles.actionBarLeft}>
                 <ComplaintStatusBadge status={status} />
-                <p className="hidden truncate text-xs text-slate-400 sm:block">
+                <p className={styles.actionBarHint}>
                   {status === "recibido" && "Lista para iniciar la investigación."}
                   {status === "investigando" && "Investigación en curso."}
                   {status === "escalado_merchant" && "En espera de respuesta del merchant."}
@@ -277,7 +274,7 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
               </div>
               {primaryAction.kind === "transition" ? (
                 <button
-                  className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+                  className={styles.actionBarBtn}
                   disabled={isTransitioning}
                   onClick={() => runPrimaryTransition(primaryAction.target)}
                   type="button"
@@ -287,10 +284,7 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
                   <ArrowRight size={15} aria-hidden="true" />
                 </button>
               ) : (
-                <a
-                  href={primaryAction.href}
-                  className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-                >
+                <a href={primaryAction.href} className={styles.actionBarBtn}>
                   {primaryAction.label}
                   <ArrowRight size={15} aria-hidden="true" />
                 </a>
@@ -299,35 +293,35 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
           </div>
         )}
 
-        <div className="mt-4">
+        <div className={styles.progressWrap}>
           <ComplaintProgress status={status} />
         </div>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className={styles.layoutGrid}>
           {/* Columna principal: flujo de trabajo */}
-          <div className="min-w-0 space-y-5">
+          <div className={styles.mainCol}>
             <ComplaintStateAction onTransition={transition} status={status} />
 
-            <section id="resumen" aria-label="Resumen de la queja" className="scroll-mt-32 rounded-xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
-              <h2 className="text-base font-semibold text-slate-100">Resumen del caso</h2>
-              <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+            <section id="resumen" aria-label="Resumen de la queja" className={`${styles.panel} ${styles.scrollAnchor}`}>
+              <h2 className={styles.panelTitle}>Resumen del caso</h2>
+              <dl className={styles.infoGrid2}>
                 <InfoRow label="Tipo">{complaint.complaintType}</InfoRow>
                 <InfoRow label="Merchant">{complaint.merchant}</InfoRow>
-                <InfoRow label="Transacción"><span className="inline-flex items-center gap-1.5 font-mono text-blue-300">{complaint.transaction.id}<CopyButton label="ID de transacción" value={complaint.transaction.id} /></span></InfoRow>
+                <InfoRow label="Transacción"><span className={styles.txIdInline}>{complaint.transaction.id}<CopyButton label="ID de transacción" value={complaint.transaction.id} /></span></InfoRow>
                 <InfoRow label="Valor">{moneyFormatter.format(complaint.transaction.amount)}</InfoRow>
-                <div className="sm:col-span-2">
+                <div className={styles.fullSpan}>
                   <InfoRow label="Descripción">
-                    <p className="max-w-3xl leading-6 text-slate-300">{complaint.description}</p>
+                    <p className={styles.description}>{complaint.description}</p>
                   </InfoRow>
                 </div>
               </dl>
             </section>
 
-            <div id="investigacion" className="scroll-mt-32">
+            <div id="investigacion" className={styles.scrollAnchor}>
               <InvestigationSection investigation={complaint.investigation} status={complaint.status} onSave={handleSaveInvestigation} />
             </div>
 
-            <div id="seguimiento-merchant" className="scroll-mt-32">
+            <div id="seguimiento-merchant" className={styles.scrollAnchor}>
               <MerchantEscalationSection
                 status={complaint.status}
                 escalation={complaint.merchantEscalation}
@@ -336,13 +330,13 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
               />
             </div>
 
-            <div id="evidencias" className="scroll-mt-32">
+            <div id="evidencias" className={styles.scrollAnchor}>
               <EvidenceSection evidences={complaint.evidences ?? []} status={complaint.status} onAdd={handleAddEvidence} />
             </div>
 
-            <section aria-label="Cliente" className="rounded-xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
-              <div className="flex items-center gap-2"><UserRound className="text-blue-300" size={18} aria-hidden="true" /><h2 className="text-base font-semibold text-slate-100">Cliente</h2></div>
-              <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+            <section aria-label="Cliente" className={styles.panel}>
+              <div className={styles.panelHeader}><UserRound className={styles.panelIcon} size={18} aria-hidden="true" /><h2 className={styles.panelTitle}>Cliente</h2></div>
+              <dl className={styles.infoGrid2}>
                 <InfoRow label="Nombre"><TextOrDash value={complaint.customer.name} /></InfoRow>
                 <InfoRow label="Documento"><TextOrDash value={complaint.customer.document} /></InfoRow>
                 <InfoRow label="Teléfono"><TextOrDash value={complaint.customer.phone} /></InfoRow>
@@ -350,10 +344,10 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
               </dl>
             </section>
 
-            <section aria-label="Transacción relacionada" className="rounded-xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
-              <div className="flex items-center gap-2"><CreditCard className="text-blue-300" size={18} aria-hidden="true" /><h2 className="text-base font-semibold text-slate-100">Transacción relacionada</h2></div>
-              <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
-                <InfoRow label="ID de transacción"><span className="inline-flex items-center gap-1.5 font-mono text-blue-300">{complaint.transaction.id}<CopyButton label="ID de transacción" value={complaint.transaction.id} /></span></InfoRow>
+            <section aria-label="Transacción relacionada" className={styles.panel}>
+              <div className={styles.panelHeader}><CreditCard className={styles.panelIcon} size={18} aria-hidden="true" /><h2 className={styles.panelTitle}>Transacción relacionada</h2></div>
+              <dl className={styles.infoGrid2}>
+                <InfoRow label="ID de transacción"><span className={styles.txIdInline}>{complaint.transaction.id}<CopyButton label="ID de transacción" value={complaint.transaction.id} /></span></InfoRow>
                 <InfoRow label="Fecha">{formatDateNormalized(complaint.transaction.date)}</InfoRow>
                 <InfoRow label="Valor">{moneyFormatter.format(complaint.transaction.amount)}</InfoRow>
                 <InfoRow label="Método de pago">{complaint.transaction.paymentMethod}</InfoRow>
@@ -362,16 +356,16 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
               </dl>
             </section>
 
-            <section aria-label="Merchant" className="rounded-xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
-              <div className="flex items-center gap-2"><Building2 className="text-blue-300" size={18} aria-hidden="true" /><h2 className="text-base font-semibold text-slate-100">Merchant</h2></div>
-              <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-3">
+            <section aria-label="Merchant" className={styles.panel}>
+              <div className={styles.panelHeader}><Building2 className={styles.panelIcon} size={18} aria-hidden="true" /><h2 className={styles.panelTitle}>Merchant</h2></div>
+              <dl className={styles.infoGrid3}>
                 <InfoRow label="Nombre"><TextOrDash value={complaint.merchantInfo.name} /></InfoRow>
                 <InfoRow label="Tipo"><TextOrDash value={complaint.merchantInfo.type} /></InfoRow>
                 <InfoRow label="Código"><TextOrDash value={complaint.merchantInfo.code} /></InfoRow>
               </dl>
             </section>
 
-            <div id="notas" className="scroll-mt-32">
+            <div id="notas" className={styles.scrollAnchor}>
               <InternalNotesSection
                 notes={complaint.notes ?? []}
                 status={complaint.status}
@@ -379,7 +373,7 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
               />
             </div>
 
-            <div id="resolucion" className="scroll-mt-32">
+            <div id="resolucion" className={styles.scrollAnchor}>
               <ResolutionSection
                 status={complaint.status}
                 resolution={complaint.resolution ?? null}
@@ -399,20 +393,20 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
           </div>
 
           {/* Panel operativo lateral */}
-          <aside className="h-fit rounded-xl border border-slate-800 bg-slate-900 p-5 lg:sticky lg:top-24" aria-label="Información del caso">
-            <h2 className="text-base font-semibold text-slate-100">Información del caso</h2>
-            <dl className="mt-4 space-y-4">
+          <aside className={styles.sidebar} aria-label="Información del caso">
+            <h2 className={styles.sidebarTitle}>Información del caso</h2>
+            <dl className={styles.sidebarList}>
               <InfoRow label="Estado"><ComplaintStatusBadge status={complaint.status} /></InfoRow>
               <InfoRow label="Prioridad"><ComplaintPriorityBadge priority={complaint.priority} /></InfoRow>
               <InfoRow label="Asignado a">
                 <AdvisorAssignment assigned={complaint.assignedAdvisor ?? null} onAssign={handleAssign} onReassign={handleReassign} onUnassign={handleUnassign} />
               </InfoRow>
-              <InfoRow label="Fecha de creación"><span className="inline-flex items-center gap-2"><CalendarDays className="text-slate-500" size={15} aria-hidden="true" />{formatDateNormalized(complaint.createdAt)}</span></InfoRow>
+              <InfoRow label="Fecha de creación"><span className={styles.dateInline}><CalendarDays size={15} aria-hidden="true" />{formatDateNormalized(complaint.createdAt)}</span></InfoRow>
               <InfoRow label="Última actualización">{formatDateNormalized(complaint.updatedAt)}</InfoRow>
             </dl>
-            <div className="mt-5 border-t border-slate-800 pt-4">
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Próxima acción</p>
-              <p className="mt-1.5 text-sm text-slate-300">
+            <div className={styles.sidebarFooter}>
+              <p className={styles.sidebarFooterLabel}>Próxima acción</p>
+              <p className={styles.sidebarFooterText}>
                 {status === "recibido" && "Iniciar investigación"}
                 {status === "investigando" && "Completar investigación e iniciar manejo"}
                 {status === "escalado_merchant" && "Registrar la respuesta del merchant para continuar"}
@@ -421,11 +415,11 @@ export function ComplaintDetail({ complaint: initialComplaint }: { complaint: Co
                 {status === "completado" && "Sin acciones pendientes"}
               </p>
             </div>
-            <Link className="mt-5 inline-flex items-center gap-2 rounded-lg text-sm font-medium text-blue-300 hover:text-blue-200 focus-visible:outline-2 focus-visible:outline-blue-400" href="/quejas"><ArrowLeft size={16} aria-hidden="true" />Volver a quejas</Link>
+            <Link className={styles.backLink} href="/quejas"><ArrowLeft size={16} aria-hidden="true" />Volver a quejas</Link>
           </aside>
         </div>
 
-        <div id="historial" className="mt-5 scroll-mt-32">
+        <div id="historial" className={`${styles.historyWrap} ${styles.scrollAnchor}`}>
           <ComplaintTimeline events={complaint.history ?? []} />
         </div>
       </PageContainer>

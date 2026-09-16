@@ -1,0 +1,168 @@
+@use "../../app/theme-mixins" as *;
+
+.overlay {
+  @include dialog-overlay;
+  z-index: 50;
+}
+
+.dialog {
+  @include dialog-box;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  @include dialog-title;
+}
+
+.description {
+  @include dialog-description;
+}
+
+.closeBtn {
+  @include icon-button;
+}
+
+.searchWrap {
+  position: relative;
+  margin-top: 1rem;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.searchInput {
+  @include control;
+  height: 2.5rem;
+  padding-left: 2.25rem;
+}
+
+.list {
+  margin-top: 0.75rem;
+  max-height: 15rem;
+  overflow: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.65rem;
+  border: none;
+  background: transparent;
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.avatarCurrent {
+  background: var(--focus-ring);
+  color: var(--accent-strong);
+}
+
+.optionBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.optionName {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.optionNameCurrent {
+  color: var(--text-muted);
+}
+
+.optionRole {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.currentTag {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.35rem;
+  background: var(--focus-ring);
+  padding: 0.15rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+.emptyRow {
+  padding: 0.9rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.cancelBtn {
+  border: none;
+  background: none;
+  border-radius: var(--radius);
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+}

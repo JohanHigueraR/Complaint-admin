@@ -1,0 +1,9 @@
+@use "../../app/theme-mixins" as *;
+
+.button {
+  @include icon-button;
+}
+
+.copied {
+  color: var(--status-aprobado-fg);
+}

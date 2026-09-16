@@ -1,0 +1,197 @@
+.sidebar {
+  display: none;
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--sidebar-border);
+  background: var(--sidebar);
+  transition: width 0.15s ease;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+// Ancho colapsado (--sidebar-collapsed-width ya viene del sistema compartido, ver
+// app/shared/styles/_variables.scss). Puro CSS por atributo en <html> — sin esto, colapsar
+// dependería de un re-render de React y podría parpadear en la carga (ver lib/sidebar-store.ts).
+:global(html[data-sidebar="collapsed"]) .sidebar {
+  width: var(--sidebar-collapsed-width);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--topbar-height);
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+:global(html[data-sidebar="collapsed"]) .brand {
+  justify-content: center;
+  padding: 0 0.5rem;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.brandText {
+  min-width: 0;
+  overflow: hidden;
+}
+
+:global(html[data-sidebar="collapsed"]) .brandText {
+  display: none;
+}
+
+.brandName {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--sidebar-text);
+}
+
+.brandSub {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--sidebar-text-muted);
+}
+
+.collapseRow {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.collapseBtn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.65rem;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  color: var(--sidebar-text-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--sidebar-hover);
+    color: var(--sidebar-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+}
+
+:global(html[data-sidebar="collapsed"]) .collapseBtn {
+  justify-content: center;
+}
+
+// Qué ícono se ve lo decide el atributo en <html> (mismo patrón que theme-toggle.module.scss)
+// para que no dependa de un re-render de React ni genere parpadeo/mismatch de hidratación.
+.collapseIconExpanded {
+  flex-shrink: 0;
+  display: block;
+}
+
+.collapseIconCollapsed {
+  flex-shrink: 0;
+  display: none;
+}
+
+:global(html[data-sidebar="collapsed"]) .collapseIconExpanded {
+  display: none;
+}
+
+:global(html[data-sidebar="collapsed"]) .collapseIconCollapsed {
+  display: block;
+}
+
+.collapseLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:global(html[data-sidebar="collapsed"]) .collapseLabel {
+  display: none;
+}
+
+.nav {
+  flex: 1;
+  padding: 0.75rem;
+}
+
+:global(html[data-sidebar="collapsed"]) .nav {
+  padding: 0.75rem 0.5rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.groupSpaced {
+  margin-top: 1.75rem;
+}
+
+.groupLabel {
+  margin: 0;
+  padding: 0 0.75rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--sidebar-text-muted);
+}
+
+:global(html[data-sidebar="collapsed"]) .groupLabel {
+  display: none;
+}
+
+.footer {
+  padding: 1rem;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+:global(html[data-sidebar="collapsed"]) .footer {
+  display: none;
+}
+
+.footerText {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--sidebar-text-muted);
+}

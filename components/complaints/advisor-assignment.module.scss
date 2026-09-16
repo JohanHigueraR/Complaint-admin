@@ -1,0 +1,61 @@
+@use "../../app/theme-mixins" as *;
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.avatarAssigned {
+  background: var(--focus-ring);
+  color: var(--accent-strong);
+}
+
+.body {
+  min-width: 0;
+  flex: 1;
+}
+
+.name {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.nameEmpty {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.role {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.changeBtn {
+  @include button-ghost;
+  flex-shrink: 0;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.75rem;
+}

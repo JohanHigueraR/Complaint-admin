@@ -3,6 +3,7 @@
 import { Bell, Building2, CheckCircle2, AlertCircle, FileText, Paperclip, Square } from "lucide-react";
 import Link from "next/link";
 import type { Notification } from "@/types/complaint";
+import styles from "./notification-item.module.scss";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -13,21 +14,21 @@ export function NotificationItem({ notification, onMarkAsRead }: NotificationIte
   const getIcon = () => {
     switch (notification.type) {
       case "assignment":
-        return <CheckCircle2 size={16} className="text-blue-400" />;
+        return <CheckCircle2 size={16} className={styles.iconAssignment} />;
       case "status_change":
-        return <AlertCircle size={16} className="text-amber-400" />;
+        return <AlertCircle size={16} className={styles.iconStatus} />;
       case "investigation":
-        return <FileText size={16} className="text-slate-400" />;
+        return <FileText size={16} className={styles.iconInvestigation} />;
       case "evidence":
-        return <Paperclip size={16} className="text-green-400" />;
+        return <Paperclip size={16} className={styles.iconEvidence} />;
       case "note":
-        return <Square size={16} className="text-violet-400" />;
+        return <Square size={16} className={styles.iconNote} />;
       case "resolution":
-        return <CheckCircle2 size={16} className="text-emerald-400" />;
+        return <CheckCircle2 size={16} className={styles.iconResolution} />;
       case "merchant":
-        return <Building2 size={16} className="text-orange-400" />;
+        return <Building2 size={16} className={styles.iconMerchant} />;
       default:
-        return <Bell size={16} className="text-slate-400" />;
+        return <Bell size={16} className={styles.iconDefault} />;
     }
   };
 
@@ -38,33 +39,28 @@ export function NotificationItem({ notification, onMarkAsRead }: NotificationIte
   };
 
   const content = (
-    <div
-      className={`flex gap-3 px-4 py-3 transition-colors ${
-        notification.read ? "bg-slate-900" : "bg-slate-800/50 hover:bg-slate-800/80"
-      }`}
-      onClick={handleClick}
-    >
-      <div className="mt-0.5 flex-shrink-0">{getIcon()}</div>
-      <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${notification.read ? "text-slate-400" : "text-slate-100"}`}>
+    <div className={`${styles.item} ${notification.read ? styles.itemRead : styles.itemUnread}`} onClick={handleClick}>
+      <div className={styles.icon}>{getIcon()}</div>
+      <div className={styles.body}>
+        <p className={`${styles.title} ${!notification.read ? styles.titleUnread : ""}`}>
           {notification.title}
         </p>
-        <p className="text-xs text-slate-500 leading-relaxed mt-1">{notification.description}</p>
-        <p className="text-xs text-slate-600 mt-2">
+        <p className={styles.description}>{notification.description}</p>
+        <p className={styles.time}>
           {new Intl.DateTimeFormat("es-CO", { hour: "2-digit", minute: "2-digit", timeZone: "America/Bogota" }).format(new Date(notification.createdAt))}
         </p>
       </div>
-      {!notification.read && <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-400 mt-2" />}
+      {!notification.read && <div className={styles.dot} />}
     </div>
   );
 
   if (notification.complaintId) {
     return (
-      <Link href={`/quejas/${notification.complaintId}`} className="block hover:bg-slate-800/30 transition-colors">
+      <Link href={`/quejas/${notification.complaintId}`} className={styles.link}>
         {content}
       </Link>
     );
   }
 
-  return <div className="block cursor-pointer">{content}</div>;
+  return <div>{content}</div>;
 }

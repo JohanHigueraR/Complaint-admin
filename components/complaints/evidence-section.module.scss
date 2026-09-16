@@ -1,0 +1,311 @@
+@use "../../app/theme-mixins" as *;
+
+.section {
+  @include panel;
+  padding: 1.25rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.icon {
+  @include section-icon;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.addBtn {
+  @include button-primary;
+}
+
+.empty {
+  margin-top: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.emphasis {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.list {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 0.75rem;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--accent);
+  }
+}
+
+.itemLeft {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fileIcon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  background: var(--surface-hover);
+}
+
+.fileName {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fileMeta {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fileUploader {
+  margin: 0.15rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.viewBtn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius);
+  padding: 0.4rem 0.65rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.readOnlyHint {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.overlay {
+  @include dialog-overlay;
+}
+
+.previewDialog {
+  @include dialog-box(40rem);
+}
+
+.previewHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.previewName {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.previewMeta {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.closeBtn {
+  @include icon-button;
+}
+
+.previewBody {
+  margin-top: 1rem;
+  display: grid;
+  place-items: center;
+  height: 16rem;
+  width: 100%;
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.previewFallback {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.previewDescription {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.dialog {
+  @include dialog-box;
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dialogTitle {
+  @include dialog-title;
+}
+
+.dialogDescription {
+  @include dialog-description;
+}
+
+.field {
+  margin-top: 1rem;
+}
+
+.label {
+  @include form-label;
+}
+
+.fileInput {
+  @include control;
+  margin-top: 0.5rem;
+  border-style: dashed;
+  padding: 0.65rem;
+
+  &::file-selector-button {
+    margin-right: 0.75rem;
+    border: none;
+    border-radius: 0.4rem;
+    background: var(--surface-hover);
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+}
+
+.selectedFile {
+  margin: 0.4rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.textInput {
+  @include control;
+  margin-top: 0.5rem;
+}
+
+.error {
+  @include error-banner;
+  margin-top: 0.75rem;
+}
+
+.dialogActions {
+  @include dialog-actions;
+}
+
+.cancelBtn {
+  border: none;
+  background: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+}
+
+.submitBtn {
+  @include button-primary;
+}
+
+.iconImage { color: var(--status-investigando-fg); }
+.iconPdf { color: var(--priority-media-fg); }
+.iconFile { color: var(--text-muted); }

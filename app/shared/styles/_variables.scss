@@ -1,0 +1,39 @@
+// Softgic brand palette (logo)
+$orange: #f7941e;
+$orange-light: #ffc20e;
+$teal: #00a99d;
+$teal-dark: #008f85;
+$charcoal: #4d4d4f;
+$white: #ffffff;
+
+$bg: #f5f7f8;
+$bg-elevated: $white;
+$sidebar: $charcoal;
+$sidebar-hover: #3f3f41;
+$sidebar-active: $teal;
+$accent: $orange;
+$accent-strong: #e07f0c;
+$accent-secondary: $teal;
+$text: $charcoal;
+$text-muted: #6b6b6e;
+$border: #e2e5e7;
+$danger: #d92d20;
+$ok: $teal;
+$warn: $orange;
+$shadow: 0 4px 16px rgba(77, 77, 79, 0.08);
+$radius: 8px;
+$sidebar-width: 248px;
+$sidebar-collapsed-width: 68px;
+$topbar-height: 56px;
+// next/font inyecta --font-softgic en <html> (no reusar el mismo nombre en :root)
+$font-ui: var(--font-softgic), system-ui, -apple-system, sans-serif;
+$font-brand: var(--font-softgic), system-ui, -apple-system, sans-serif;
+
+// N8n Chatbot Palette
+$n8n-teal-deep: #037F8C;
+$n8n-teal-bright: #25D9D9;
+$n8n-orange-yellow: #F29A2E;
+$n8n-orange-rust: #D96725;
+$n8n-white: #ffffff;
+$n8n-black: #000000;
+
